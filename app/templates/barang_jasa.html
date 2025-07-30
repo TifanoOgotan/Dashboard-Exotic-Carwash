@@ -25,16 +25,52 @@
     </div>
   </div>
   <div class="card-body">
-    <table id="tabel_barang_jasa">
+    <table
+      id="tabel_barang_jasa"
+      class="display table table-light table-striped-columns"
+      style="width: 100%"
+    >
+      <thead>
         <tr>
-            <th>ID Produk</th>
-            <th>Nama Produk</th>
-            <th>Jenis</th>
-            <th>Harga</th>
-            <th>Stok</th>
-            <th>Aksi</th>
+          <th>ID Produk</th>
+          <th>Nama Produk</th>
+          <th>Jenis</th>
+          <th>Harga</th>
+          <th>Stok</th>
+          <th>Aksi</th>
         </tr>
+      </thead>
+      <tbody></tbody>
     </table>
   </div>
 </div>
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(function () {
+    // $("#tabel_barang_jasa").DataTable({
+    //   processing: true,
+    //   serverSide: true,
+    //   ajax: {
+    //     url: "/barang-jasa/data",
+    //     type: "POST",
+    //   },
+    //   columns: [
+    //     { data: "id_produk" },
+    //     { data: "nama_produk" },
+    //     { data: "jenis" },
+    //     { data: "harga" },
+    //     { data: "stok" },
+    //     {
+    //       data: null,
+    //       orderable: false,
+    //       searchable: false,
+    //       render: function (data, type, row) {
+    //         return `<button class="btn btn-sm btn-primary edit-btn" onclick"${row.id}">Edit</button>
+    //           <button class="btn btn-sm btn-danger delete-btn" onclick"${row.id_produk}">Hapus</button>`;
+    //       },
+    //     },
+    //   ],
+    // });
+  });
+</script>
 {% endblock %}
