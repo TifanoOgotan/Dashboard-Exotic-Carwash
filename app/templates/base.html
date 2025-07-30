@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exotic Carwash</title>
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugin/bootstrap/css/bootstrap.min.css') }}"
+    />
+    <script src="{{ url_for('static', filename='plugin/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Swal Fire -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugin/sweetalert2/sweetalert2.min.css') }}"
+    />
+    <script src="{{ url_for('static', filename='plugin/sweetalert2/sweetalert2.min.js') }}"></script>
+
+    <!-- Font Awesome 6 via CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-..."
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+
+  <body>
+    <!-- Peringatan Pop Up -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <script>
+      Swal.fire({
+        icon: `{{ 'success' if category == 'success' 
+                  else 'info' if category == 'info'
+                  else 'warning' if category == 'warning' or category == 'unauthorized'
+                  else 'error' }}`,
+        title: `{{ message }}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    </script>
+    {% endfor %} {% endif %} {% endwith %}
+
+    <!-- Loading Page -->
+    <!-- <div id="page-loading">
+        <img id="page-loading-image" src="/static/img/loaging.gif" alt="Loading..."
+            style="opacity: 1; border-radius:80px;">
+    </div> -->
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark px-3">
+      <button class="btn btn-outline-light" id="sidebarToggle">☰</button>
+      <span class="navbar-brand ms-3">{{session.person.nama}}</span>
+    </nav>
+
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <div id="sidebar" class="bg-light border-end">
+        <ul class="list-group list-group-flush p-2">
+          <li class="list-group-item">
+            <a href="/" class="nav-link">Dashboard</a>
+          </li>
+          {% for menu in session.get('menus', []) %} {% if menu['aktif_menu'] ==
+          'T' %}
+          <li class="list-group-item">
+            <a href="{{ menu['link_menu'] }}" class="nav-link"
+              >{{ menu['nama_menu'].title() }}</a
+            >
+          </li>
+          {% endif %} {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-grow-1 p-4" id="main-content">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          document.getElementById("sidebar").classList.toggle("d-none");
+        });
+    </script>
+
+    {% block script %} {% endblock%}
+  </body>
+</html>

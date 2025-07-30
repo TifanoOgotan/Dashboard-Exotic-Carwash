@@ -1,0 +1,25 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+#main-content {
+    flex-grow: 1;
+    padding: 20px;
+    min-height: calc(100vh - 56px); /* 56px tinggi navbar bootstrap */
+    overflow: hidden; /* Hindari scroll kecuali dibutuhkan */
+}
+
+hr {
+    border: none;
+    height: 4px; /* Ketebalan garis */
+    background-color: #333; /* Warna garis */
+    margin: 20px 0; /* Jarak atas bawah */
+}
