@@ -1,6 +1,6 @@
 from app import db
 
-class EcProduk(db.Model):
+class Produk(db.Model):
     __tablename__ = 'ec_produk'
 
     id_produk = db.Column(db.String(100), primary_key=True)
