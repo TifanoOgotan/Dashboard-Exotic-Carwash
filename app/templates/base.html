@@ -11,6 +11,9 @@
       href="{{ url_for('static', filename='css/style.css') }}"
     />
 
+    <!-- Jquery -->
+    <script src="{{ url_for('static', filename='plugin/jquery/jquery.min.js') }}"></script>
+
     <!-- Bootstrap -->
     <link
       rel="stylesheet"
@@ -33,6 +36,13 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <!-- Datatable -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='plugin/datatables/datatables.min.css') }}"
+    />
+    <script src="{{ url_for('static', filename='plugin/datatables/datatables.min.js') }}"></script>
   </head>
 
   <body>
