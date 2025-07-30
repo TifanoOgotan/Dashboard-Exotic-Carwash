@@ -12,6 +12,17 @@ class Menu(db.Model):
     aksi_menu = db.Column(db.String(1), nullable=True)
     aktif_menu = db.Column(db.String(1), nullable=True)
 
+    def __init__(self, kode_menu, nama_menu, lvl_menu, anak_menu=None,
+                 link_menu=None, akses_menu=None, aksi_menu=None, aktif_menu=None):
+        self.kode_menu = kode_menu
+        self.nama_menu = nama_menu
+        self.lvl_menu = lvl_menu
+        self.anak_menu = anak_menu
+        self.link_menu = link_menu
+        self.akses_menu = akses_menu
+        self.aksi_menu = aksi_menu
+        self.aktif_menu = aktif_menu
+
     def to_dict(self):
         return {
             "kode_menu": self.kode_menu,
