@@ -1,0 +1,42 @@
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+from app.daos import menu_dao, user_dao, produk_dao
+
+produk_bp = Blueprint('produk', __name__, url_prefix='/produk')
+
+@produk_bp.route('/')
+def produk():
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+    return render_template('produk.html')
+
+@produk_bp.route('/data', methods=['POST'])
+def produk_data():
+    data = produk_dao.get_all_produk()
+    return jsonify({"data": data})
+
+@produk_bp.route('/tambah-produk', methods=['POST'])
+def tambah_produk():
+    data = request.get_json()
+    nama_produk = data.get('nama_produk')
+    jenis = data.get('jenis')
+    harga = data.get('harga')
+    stok = data.get('stok')
+    hasil = produk_dao.insert_produk(nama_produk, jenis, harga, stok)
+    return jsonify(hasil)
+
+@produk_bp.route('/update-produk', methods=['POST'])
+def update_produk():
+    data = request.get_json()
+    id_produk = data.get('id_produk')
+    nama_produk = data.get('nama_produk')
+    jenis = data.get('jenis')
+    harga = data.get('harga')
+    stok = data.get('stok')
+    hasil = produk_dao.update_produk(id_produk, nama_produk, jenis, harga, stok)
+    return jsonify(hasil)
+
+@produk_bp.route('/delete/<id_produk>', methods=['POST'])
+def delete_produk(id_produk):
+    hasil = produk_dao.delete_produk(id_produk)
+    return jsonify(hasil)

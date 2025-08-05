@@ -19,13 +19,13 @@ def create_app():
     from app.controllers.base_controller import base_bp
     from app.controllers.login_controller import auth_bp
     from app.controllers.kasir_controller import kasir_bp
-    from app.controllers.barang_jasa_controller import barang_jasa_bp
+    from app.controllers.produk_controller import produk_bp
 
     # register blueprint
     app.register_blueprint(base_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(kasir_bp)
-    app.register_blueprint(barang_jasa_bp)
+    app.register_blueprint(produk_bp)
 
     return app
 

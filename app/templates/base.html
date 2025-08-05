@@ -107,6 +107,28 @@
         });
     </script>
 
+    <!-- Global Function -->
+    <script>
+      function formatRupiah(el) {
+        let angka = el.value.replace(/[^0-9]/g, '');
+        let hasil = '';
+        let angkaRev = angka.split('').reverse().join('');
+
+        for (let i = 0; i < angkaRev.length; i++) {
+          if (i % 3 === 0 && i !== 0) hasil += '.';
+          hasil += angkaRev[i];
+        }
+
+        console.log(hasil)
+
+        el.value = hasil.split('').reverse().join('');
+      }
+
+      function getAngkaAsli(rupiahStr) {
+        return rupiahStr.replace(/[^0-9]/g, '');
+      }
+    </script>
+
     {% block script %} {% endblock%}
   </body>
 </html>
