@@ -214,17 +214,9 @@
     $("#produk tbody").on("change", ".worker-input", function () {
       const tr = $(this).closest("tr");
       const row = produk.row(tr);
-
-      // Ambil data sekarang
       const data = row.data();
-
-      // Ambil nilai baru dari input
       const newValue = $(this).val();
-
-      // Update nilai di dalam objek data
       data.worker = newValue;
-
-      // Set ulang data ke row agar sinkron
       row.data(data).draw(false);
     });
 
@@ -233,27 +225,26 @@
       const row = produk.row(tr);
       const data = row.data();
       const newValue = parseInt($(this).val()) || 0;
-
-      // Update jumlah
       data.jumlah = newValue;
-
-      // Hitung ulang total
       data.total = data.harga * newValue;
-
       row.data(data).draw(false);
     });
 
     $("#produk tbody").on("click", ".delete-btn", function () {
-      // Ambil baris terkait
-      const row = table.row($(this).closest("tr"));
-
-      // Optional: konfirmasi
-      const namaProduk = $(this).data("nama");
-      const konfirmasi = confirm(`Yakin ingin menghapus "${namaProduk}"?`);
-
-      if (konfirmasi) {
-        row.remove().draw(); // Hapus baris dan update tampilan
-      }
+      const row = produk.row($(this).closest("tr"));
+      const nama_produk = $(this).data("nama");
+      Swal.fire({
+        title: "Yakin?",
+        text: `Ingin menghapus produk ${nama_produk} ?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Iya, hapus !!!",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        row.remove().draw();
+      });
     });
   });
 
