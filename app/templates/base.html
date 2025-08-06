@@ -70,8 +70,15 @@
 
     <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
-      <button class="btn btn-outline-light" id="sidebarToggle">☰</button>
-      <span class="navbar-brand ms-3">{{session.person.nama}}</span>
+      <div class="d-flex align-items-center">
+        <button class="btn btn-outline-light me-2" id="sidebarToggle">☰</button>
+        <div class="d-flex flex-column">
+          <span class="text-white small">{{session.person.nama}}</span>
+          <span class="text-white fw-bold">{{session.person.jabatan}}</span>
+        </div>
+      </div>
+      <span class="navbar-brand ms-3">Exotic Carwash & SPA</span>
+      <button class="btn btn-danger" onclick="window.location.href='/auth/logout'">Keluar</button>
     </nav>
 
     <div class="d-flex">
@@ -98,6 +105,13 @@
       </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-auto">
+      <div class="container">
+        <small>&copy; 2025 | Exotic Carwash & SPA. All rights reserved.</small>
+      </div>
+    </footer>
+
     <!-- JS -->
     <script>
       document
@@ -110,22 +124,22 @@
     <!-- Global Function -->
     <script>
       function formatRupiah(el) {
-        let angka = el.value.replace(/[^0-9]/g, '');
-        let hasil = '';
-        let angkaRev = angka.split('').reverse().join('');
+        let angka = el.value.replace(/[^0-9]/g, "");
+        let hasil = "";
+        let angkaRev = angka.split("").reverse().join("");
 
         for (let i = 0; i < angkaRev.length; i++) {
-          if (i % 3 === 0 && i !== 0) hasil += '.';
+          if (i % 3 === 0 && i !== 0) hasil += ".";
           hasil += angkaRev[i];
         }
 
-        console.log(hasil)
+        console.log(hasil);
 
-        el.value = hasil.split('').reverse().join('');
+        el.value = hasil.split("").reverse().join("");
       }
 
       function getAngkaAsli(rupiahStr) {
-        return rupiahStr.replace(/[^0-9]/g, '');
+        return rupiahStr.replace(/[^0-9]/g, "");
       }
     </script>
 

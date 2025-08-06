@@ -1,4 +1,262 @@
 {% extends 'base.html' %} {% block content %}
 <h2>Kasir</h2>
-<hr/>
+<hr />
+<div class="card">
+  <div class="card-body">
+    <div class="row mb-3">
+      <label for="nopol" class="col col-form-label" style="text-align: right"
+        >Nomor Kendaraan</label
+      >
+      <div class="col">
+        <input
+          type="text"
+          class="form-control"
+          id="nopol"
+          placeholder="Nomor Kendaraan"
+          oninput="this.value = this.value.toUpperCase().replace(/\s/g, '');"
+        />
+      </div>
+      <label
+        for="nama_kendaraan"
+        class="col col-form-label"
+        style="text-align: right"
+        >Nama Kendaraan</label
+      >
+      <div class="col">
+        <input
+          type="text"
+          class="form-control"
+          id="nama_kendaraan"
+          placeholder="Nama Kendaraan"
+          oninput="this.value = this.value.toUpperCase();"
+        />
+      </div>
+      <label for="no_hp" class="col col-form-label" style="text-align: right"
+        >Nomor Hp</label
+      >
+      <div class="col">
+        <input
+          type="text"
+          class="form-control"
+          id="no_hp"
+          placeholder="Nomor HP"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+        />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-10"></div>
+      <div class="col">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#lovProduk"
+          style="width: 100%"
+        >
+          Tambah Produk
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <table
+        id="produk"
+        class="display table table-light table-striped-columns"
+        style="width: 100%"
+      >
+        <thead>
+          <tr>
+            <th>Nama Produk</th>
+            <th>Harga</th>
+            <th>Jumlah</th>
+            <th>Worker</th>
+            <th>Total</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal LOV Tambah Produk-->
+<div
+  class="modal fade"
+  id="lovProduk"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">LOV Produk</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <table
+          id="lov_produk"
+          class="display table table-light table-striped-columns"
+          style="width: 100%"
+        >
+          <thead>
+            <tr>
+              <th>Nama Produk</th>
+              <th>Harga</th>
+              <th>Stok</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(function () {
+    const lov_produk = $("#lov_produk").DataTable({
+      scrollY: "400px",
+      scrollCollapse: true,
+      paging: false,
+      processing: true,
+      serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya,
+      ordering: false,
+      ajax: {
+        url: "/produk/data",
+        type: "POST",
+        dataSrc: function (json) {
+          return json.data.filter(function (item) {
+            return item.stok > 0;
+          });
+        },
+      },
+      columns: [
+        { data: "nama_produk" },
+        {
+          data: "harga",
+          render: function (data) {
+            return parseInt(data).toLocaleString("id-ID");
+          },
+        },
+        { data: "stok" },
+      ],
+      language: {
+        emptyTable: "Tidak ada data",
+        lengthMenu: "Tampilkan _MENU_ data per halaman",
+        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+        search: "Cari:",
+        zeroRecords: "Data tidak ditemukan",
+        infoEmpty: "Menampilkan 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+      },
+    });
+
+    const produk = $("#produk").DataTable({
+      paging: false,
+      ordering: false,
+      searching: false,
+      scrollY: "400px",
+      scrollCollapse: true,
+      columns: [
+        { data: "nama_produk" },
+        {
+          data: "harga",
+          render: (data) => parseInt(data).toLocaleString("id-ID"),
+        },
+        {
+          data: "jumlah",
+          render: function (data, type, row, meta) {
+            return `<input type="number" class="form-control form-control-sm jumlah-input"
+                     data-row="${meta.row}" value="${data}" min="0" style="width: 80px;" />`;
+          },
+        },
+        {
+          data: "worker",
+          render: function (data, type, row) {
+            if (row.jenis.toUpperCase() === "JASA") {
+              return `<input type="text" class="form-control form-control-sm worker-input" value="${data}" />`;
+            } else {
+              return data || "-";
+            }
+          },
+        },
+        {
+          data: "total",
+          render: (data) => parseInt(data).toLocaleString("id-ID"),
+        },
+        {
+          data: null,
+          render: function (data, type, row, meta) {
+            return `<button class="btn btn-sm btn-danger delete-btn"
+              data-nama="${row.nama_produk}">Hapus</button>`;
+          },
+        },
+      ],
+      language: {
+        emptyTable: "Tidak ada data",
+        lengthMenu: "Tampilkan _MENU_ data per halaman",
+        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+        search: "Cari:",
+        zeroRecords: "Data tidak ditemukan",
+        infoEmpty: "Menampilkan 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+      },
+    });
+
+    $("#produk tbody").on("change", ".worker-input", function () {
+      const tr = $(this).closest("tr");
+      const row = produk.row(tr);
+
+      // Ambil data sekarang
+      const data = row.data();
+
+      // Ambil nilai baru dari input
+      const newValue = $(this).val();
+
+      // Update nilai di dalam objek data
+      data.worker = newValue;
+
+      // Set ulang data ke row agar sinkron
+      row.data(data).draw(false);
+    });
+
+    $("#produk tbody").on("change", ".jumlah-input", function () {
+      const tr = $(this).closest("tr");
+      const row = produk.row(tr);
+      const data = row.data();
+      const newValue = parseInt($(this).val()) || 0;
+
+      // Update jumlah
+      data.jumlah = newValue;
+
+      // Hitung ulang total
+      data.total = data.harga * newValue;
+
+      row.data(data).draw(false);
+    });
+
+    $("#produk tbody").on("click", ".delete-btn", function () {
+      // Ambil baris terkait
+      const row = table.row($(this).closest("tr"));
+
+      // Optional: konfirmasi
+      const namaProduk = $(this).data("nama");
+      const konfirmasi = confirm(`Yakin ingin menghapus "${namaProduk}"?`);
+
+      if (konfirmasi) {
+        row.remove().draw(); // Hapus baris dan update tampilan
+      }
+    });
+  });
+
+  // GLOBAL VAR
+</script>
 {% endblock %}
