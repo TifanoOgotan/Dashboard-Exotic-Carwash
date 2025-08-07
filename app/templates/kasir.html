@@ -16,6 +16,18 @@
           oninput="this.value = this.value.toUpperCase().replace(/\s/g, '');"
         />
       </div>
+      <label for="nama" class="col col-form-label" style="text-align: right"
+        >Nama</label
+      >
+      <div class="col">
+        <input
+          type="text"
+          class="form-control"
+          id="nama"
+          placeholder="Nama"
+          oninput="this.value = this.value.toUpperCase();"
+        />
+      </div>
       <label
         for="nama_kendaraan"
         class="col col-form-label"
@@ -31,6 +43,8 @@
           oninput="this.value = this.value.toUpperCase();"
         />
       </div>
+    </div>
+    <div class="row">
       <label for="no_hp" class="col col-form-label" style="text-align: right"
         >Nomor Hp</label
       >
@@ -43,10 +57,22 @@
           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
         />
       </div>
-    </div>
-    <div class="row">
-      <div class="col-10"></div>
-      <div class="col">
+      <label
+        for="status_bayar"
+        class="col-2 col-form-label"
+        style="text-align: right"
+        >Pembayaran</label
+      >
+      <div class="col-2">
+        <select class="form-select" id="status_bayar">
+          <option selected disabled>-- Pilih Pembayaran --</option>
+          <option value="BB">Belum Bayar</option>
+          <option value="CS">Cash</option>
+          <option value="TF">Transfer</option>
+        </select>
+      </div>
+      <div class="col-1"></div>
+      <div class="col-2">
         <button
           type="button"
           class="btn btn-primary"
@@ -57,6 +83,7 @@
           Tambah Produk
         </button>
       </div>
+      <div class="col-1"></div>
     </div>
     <div class="row">
       <table
@@ -157,6 +184,33 @@
         infoEmpty: "Menampilkan 0 data",
         infoFiltered: "(disaring dari _MAX_ total data)",
       },
+    });
+
+    $("#lov_produk tbody").on("click", "tr", function () {
+      const row = lov_produk.row(this);
+      const data = row.data();
+
+      const isExist = produk
+        .rows()
+        .data()
+        .toArray()
+        .some((rowData) => rowData.id_produk === data.id_produk);
+
+      if (isExist) {
+        Swal.fire({
+          icon: `info`,
+          title: `Produk sudah ditambahkan !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        return;
+      }
+
+      data.jumlah = 1;
+      data.worker = null;
+      data.total = data.harga * data.jumlah;
+      produk.row.add(data).draw();
+      $("#lovProduk").modal("hide");
     });
 
     const produk = $("#produk").DataTable({
