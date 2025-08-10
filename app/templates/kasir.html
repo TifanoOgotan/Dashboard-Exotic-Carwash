@@ -3,6 +3,7 @@
 <hr />
 <div class="card">
   <div class="card-body">
+    <input type="hidden" id="edit" value="F" />
     <div class="row mb-3">
       <label for="nopol" class="col col-form-label" style="text-align: right"
         >Nomor Kendaraan</label
@@ -16,14 +17,17 @@
           oninput="this.value = this.value.toUpperCase().replace(/\s/g, '');"
         />
       </div>
-      <label for="nama" class="col col-form-label" style="text-align: right"
+      <label
+        for="nama_pelanggan"
+        class="col col-form-label"
+        style="text-align: right"
         >Nama</label
       >
       <div class="col">
         <input
           type="text"
           class="form-control"
-          id="nama"
+          id="nama_pelanggan"
           placeholder="Nama"
           oninput="this.value = this.value.toUpperCase();"
         />
@@ -44,7 +48,7 @@
         />
       </div>
     </div>
-    <div class="row">
+    <div class="row mb-3">
       <label for="no_hp" class="col col-form-label" style="text-align: right"
         >Nomor Hp</label
       >
@@ -55,6 +59,22 @@
           id="no_hp"
           placeholder="Nomor HP"
           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+        />
+      </div>
+      <label
+        for="total_harga"
+        class="col col-form-label"
+        style="text-align: right"
+        >Total Harga</label
+      >
+      <div class="col">
+        <input
+          type="text"
+          class="form-control"
+          id="total_harga"
+          placeholder="Total Harga"
+          value="0"
+          readonly
         />
       </div>
       <label
@@ -71,7 +91,9 @@
           <option value="TF">Transfer</option>
         </select>
       </div>
-      <div class="col-1"></div>
+    </div>
+    <div class="row">
+      <div class="col-9"></div>
       <div class="col-2">
         <button
           type="button"
@@ -83,7 +105,6 @@
           Tambah Produk
         </button>
       </div>
-      <div class="col-1"></div>
     </div>
     <div class="row">
       <table
@@ -103,6 +124,19 @@
         </thead>
         <tbody></tbody>
       </table>
+    </div>
+    <div class="row">
+      <div class="col-9"></div>
+      <div class="col-2">
+        <button
+          type="button"
+          class="btn btn-success"
+          style="width: 100%"
+          onclick="simpanTransaksi()"
+        >
+          Simpan Transaksi
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -228,15 +262,21 @@
         {
           data: "jumlah",
           render: function (data, type, row, meta) {
-            return `<input type="number" class="form-control form-control-sm jumlah-input"
+            if (row.jenis.toUpperCase() === "JASA") {
+              return data;
+            } else {
+              return `<input type="number" class="form-control form-control-sm jumlah-input"
                      data-row="${meta.row}" value="${data}" min="0" style="width: 80px;" />`;
+            }
           },
         },
         {
           data: "worker",
           render: function (data, type, row) {
             if (row.jenis.toUpperCase() === "JASA") {
-              return `<input type="text" class="form-control form-control-sm worker-input" value="${data}" />`;
+              return `<input type="text" class="form-control form-control-sm worker-input" value="${
+                data || ""
+              }" oninput="this.value = this.value.toUpperCase();"/>`;
             } else {
               return data || "-";
             }
@@ -265,6 +305,17 @@
       },
     });
 
+    $("#produk")
+      .DataTable()
+      .on("draw", function () {
+        let total = $("#produk")
+          .DataTable()
+          .column(4, { search: "applied" })
+          .data()
+          .reduce((a, b) => a + parseInt(b || 0), 0);
+        $("#total_harga").val(total.toLocaleString("id-ID"));
+      });
+
     $("#produk tbody").on("change", ".worker-input", function () {
       const tr = $(this).closest("tr");
       const row = produk.row(tr);
@@ -279,8 +330,18 @@
       const row = produk.row(tr);
       const data = row.data();
       const newValue = parseInt($(this).val()) || 0;
-      data.jumlah = newValue;
-      data.total = data.harga * newValue;
+      if (newValue > data.stok || newValue < 1) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Jumlah tidak boleh 0 atau melebihi stok !!!`,
+          showConfirmButton: false,
+          timer: 1000,
+        });
+        $(this).val(data.jumlah);
+      } else {
+        data.jumlah = newValue;
+        data.total = data.harga * newValue;
+      }
       row.data(data).draw(false);
     });
 
@@ -300,8 +361,94 @@
         row.remove().draw();
       });
     });
+
+    $("#nopol").on("change", function () {
+      const nopol = $("#nopol").val();
+      const daftar = JSON.parse(`{{ daftar | tojson }}`);
+      const ada = daftar.find((item) => item.nopol === nopol);
+      if (ada) {
+        $("#nama_pelanggan").val(ada.nama_pelanggan);
+        $("#nama_kendaraan").val(ada.nama_kendaraan);
+        $("#no_hp").val(ada.no_hp);
+      }
+    });
   });
 
-  // GLOBAL VAR
+  document
+    .querySelectorAll("#nama_pelanggan, #nama_kendaraan, #no_hp")
+    .forEach((el) => {
+      el.addEventListener("input", () => {
+        document.getElementById("edit").value = "T";
+      });
+    });
+
+  async function simpanTransaksi() {
+    let nopol = $("#nopol").val();
+    let nama_pelanggan = $("#nama_pelanggan").val();
+    let nama_kendaraan = $("#nama_kendaraan").val();
+    let no_hp = $("#no_hp").val();
+    let total_harga = getAngkaAsli($("#total_harga").val());
+    let status_bayar = $("#status_bayar").val();
+    let edit = $("#edit").val();
+    let details = $("#produk").DataTable().rows().data().toArray();
+
+    if (
+      !nopol ||
+      !nama_pelanggan ||
+      !nama_kendaraan ||
+      !status_bayar ||
+      !details.length
+    ) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Data Transaksi tidak lengkap !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    $.ajax({
+      url: "/kasir/simpan-transaksi", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        nopol,
+        nama_pelanggan,
+        nama_kendaraan,
+        no_hp,
+        total_harga,
+        status_bayar,
+        edit,
+        details,
+      }),
+      success: async function (response) {
+        if (response.status) {
+          await Swal.fire({
+            icon: `success`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          location.reload();
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat menyimpan transaksi !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+    });
+  }
 </script>
 {% endblock %}

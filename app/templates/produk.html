@@ -316,6 +316,13 @@
       $("#edit_jenis").val(btn.data("jenis"));
       $("#edit_harga").val(parseInt(btn.data("harga")).toLocaleString("id-ID"));
       $("#edit_stok").val(btn.data("stok"));
+
+      const jenis = btn.data("jenis")
+      if (jenis === "JASA") {
+        $("#edit_stok").prop("disabled", true).val("1"); // disable dan kosongkan
+      } else {
+        $("#edit_stok").prop("disabled", false); // enable
+      }
     });
 
     $.fn.dataTable.ext.search.push((settings, data) => {
@@ -377,6 +384,16 @@
         }
       });
     });
+  });
+
+  $("#t_jenis").on("change", function () {
+    const jenis = $(this).val();
+
+    if (jenis === "JASA") {
+      $("#t_stok").prop("disabled", true).val("1"); // disable dan kosongkan
+    } else {
+      $("#t_stok").prop("disabled", false); // enable
+    }
   });
 
   async function simpanEdit() {

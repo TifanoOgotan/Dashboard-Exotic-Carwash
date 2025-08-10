@@ -1,7 +1,6 @@
 from app.models.produk_model import Produk
 from app import db
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-import uuid
 
 def get_all_produk():
     try:
