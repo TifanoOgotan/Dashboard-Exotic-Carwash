@@ -12,31 +12,43 @@ def produk():
 
 @produk_bp.route('/data', methods=['POST'])
 def produk_data():
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
     data = produk_dao.get_all_produk()
     return jsonify({"data": data})
 
 @produk_bp.route('/tambah-produk', methods=['POST'])
 def tambah_produk():
-    data = request.get_json()
-    nama_produk = data.get('nama_produk')
-    jenis = data.get('jenis')
-    harga = data.get('harga')
-    stok = data.get('stok')
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+    param = request.get_json()
+    nama_produk = param.get('nama_produk')
+    jenis = param.get('jenis')
+    harga = param.get('harga')
+    stok = param.get('stok')
     hasil = produk_dao.insert_produk(nama_produk, jenis, harga, stok)
     return jsonify(hasil)
 
 @produk_bp.route('/update-produk', methods=['POST'])
 def update_produk():
-    data = request.get_json()
-    id_produk = data.get('id_produk')
-    nama_produk = data.get('nama_produk')
-    jenis = data.get('jenis')
-    harga = data.get('harga')
-    stok = data.get('stok')
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+    param = request.get_json()
+    id_produk = param.get('id_produk')
+    nama_produk = param.get('nama_produk')
+    jenis = param.get('jenis')
+    harga = param.get('harga')
+    stok = param.get('stok')
     hasil = produk_dao.update_produk(id_produk, nama_produk, jenis, harga, stok)
     return jsonify(hasil)
 
 @produk_bp.route('/delete/<id_produk>', methods=['POST'])
 def delete_produk(id_produk):
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
     hasil = produk_dao.delete_produk(id_produk)
     return jsonify(hasil)
