@@ -8,25 +8,23 @@ def kasir():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
-
     daftar = pelanggan_dao.get_all_pelanggan()
-
     return render_template('kasir.html',daftar=daftar)
 
 @kasir_bp.route('/simpan-transaksi', methods=['POST'])
 def simpan_transaksi():
-    data = request.get_json()
-    nopol = data.get('nopol')
-    nama_pelanggan = data.get('nama_pelanggan')
-    nama_kendaraan = data.get('nama_kendaraan')
-    no_hp = data.get('no_hp')
-    total_harga = data.get('total_harga')
-    status_bayar = data.get('status_bayar')
-    edit = data.get('edit')
-    details = data.get('details')
-
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+    param = request.get_json()
+    nopol = param.get('nopol')
+    nama_pelanggan = param.get('nama_pelanggan')
+    nama_kendaraan = param.get('nama_kendaraan')
+    no_hp = param.get('no_hp')
+    total_harga = param.get('total_harga')
+    status_bayar = param.get('status_bayar')
+    edit = param.get('edit')
+    details = param.get('details')
     pelanggan_dao.check_pelanggan(nopol, nama_pelanggan, nama_kendaraan, no_hp, edit)
-
     hasil = transaksi_dao.insert_transaksi(nopol, status_bayar, total_harga, details)
-
     return jsonify(hasil)
