@@ -1,0 +1,229 @@
+{% extends 'base.html' %} {% block content %}
+<h2>Transaksi</h2>
+<hr />
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col-7">
+        <div class="row">
+          <label class="col-2 col-form-label" style="text-align: right"
+            >Tanggal</label
+          >
+          <div class="col-3">
+            <input
+              type="text"
+              class="form-control"
+              name="tanggal_awal"
+              id="tanggal_awal"
+            />
+          </div>
+          <label class="col-1 col-form-label" style="text-align: center"
+            >S/D</label
+          >
+          <div class="col-3">
+            <input
+              type="text"
+              class="form-control"
+              name="tanggal_akhir"
+              id="tanggal_akhir"
+            />
+          </div>
+          <div class="col">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cari()"
+              style="width: 75%"
+            >
+              Cari
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-5" style="justify-items: center">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="cari_transaksi"
+            placeholder="Cari Transaksi"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table
+      id="transaksi"
+      class="display table table-light table-striped-columns"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>ID Transaksi</th>
+          <th>Tanggal</th>
+          <th>Nomor Kendaraan</th>
+          <th>Pembayaran</th>
+          <th>Total Harga</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(function () {
+    $("#tanggal_awal").val(moment().format("DD-MMM-YYYY"));
+    $("#tanggal_akhir").val(moment().format("DD-MMM-YYYY"));
+
+    const table_transaksi = $("#transaksi").DataTable({
+      dom: "lrtip", // hilangkan search default
+      scrollY: "400px",
+      scrollCollapse: true,
+      paging: false,
+      processing: true,
+      serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya
+      ajax: {
+        url: "/transaksi/data",
+        type: "POST",
+        data: function (d) {
+          d.tanggal_awal = $("#tanggal_awal").val();
+          d.tanggal_akhir = $("#tanggal_akhir").val();
+        },
+      },
+      columns: [
+        { data: "id_transaksi" },
+        { data: "tanggal" },
+        { data: "nopol" },
+        {
+          data: "status_bayar",
+          render: function (data) {
+            if (data == "CS") {
+              return "CASH";
+            } else if (data == "TF") {
+              return "TRANSFER";
+            } else {
+              return "BELUM BAYAR";
+            }
+          },
+        },
+        {
+          data: "total_harga",
+          render: function (data) {
+            return parseInt(data).toLocaleString("id-ID");
+          },
+        },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            return `
+            <button class="btn btn-sm btn-primary btn-detail">Detail</button>
+            <button class="btn btn-sm btn-warning edit-btn"
+              data-id="${row.id_transaksi}"
+              data-tanggal="${row.tanggal}"
+              data-nopol="${row.nopol}"
+              data-status="${row.status_bayar}"
+              data-harga="${row.total_harga}"
+              data-details="${row.details}"
+              data-bs-toggle="modal"
+              data-bs-target="#editModal">Edit</button>
+            <button class="btn btn-sm btn-success btn-cetak"
+              data-id="${row.id_transaksi}">Cetak Ulang</button>`;
+          },
+        },
+      ],
+      language: {
+        decimal: "",
+        emptyTable: "Tidak ada data yang tersedia pada tabel ini",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+        lengthMenu: "Tampilkan _MENU_ data",
+        loadingRecords: "Memuat...",
+        processing: "Memproses...",
+        search: "Cari:",
+        zeroRecords: "Tidak ditemukan data yang sesuai",
+        aria: {
+          sortAscending: ": aktifkan untuk mengurutkan kolom secara menaik",
+          sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
+        },
+      },
+    });
+
+    $.fn.dataTable.ext.search.push((settings, data) => {
+      const val = $("#cari_transaksi").val().toUpperCase();
+      return (
+        !val ||
+        data[0].toUpperCase().includes(val) ||
+        data[1].toUpperCase().includes(val) ||
+        data[2].toUpperCase().includes(val) ||
+        data[3].toUpperCase().includes(val)
+      );
+    });
+
+    $("#cari_transaksi").on("keyup", () => table_transaksi.draw());
+
+    $("#transaksi tbody").on("click", ".btn-detail", function () {
+      var tr = $(this).closest("tr");
+      var row = table_transaksi.row(tr);
+
+      if (row.child.isShown()) {
+        // Tutup
+        row.child.hide();
+        tr.removeClass("shown");
+      } else {
+        // Buka detail
+        row.child(format(row.data())).show();
+        tr.addClass("shown");
+      }
+    });
+
+    // fungsi format detail
+    function format(d) {
+      let html = `
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Nama Produk</th>
+                    <th style="width: 15%;">Jenis</th>
+                    <th style="width: 10%;">Jumlah</th>
+                    <th style="width: 15%;">Harga</th>
+                    <th style="width: 15%;">Total</th>
+                    <th style="width: 15%;">Worker</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+      d.details.forEach((item) => {
+        html += `
+            <tr>
+                <td style="width: 30%;">${item.nama_produk}</td>
+                <td style="width: 15%;">${item.jenis}</td>
+                <td style="width: 10%;">${item.jumlah}</td>
+                <td style="width: 15%;">${item.harga.toLocaleString()}</td>
+                <td style="width: 15%;">${item.total.toLocaleString()}</td>
+                <td style="width: 15%;">${item.worker ?? ""}</td>
+            </tr>
+        `;
+      });
+
+      html += "</tbody></table>";
+      return html;
+    }
+
+    $("#transaksi").on("click", ".btn-cetak", function () {
+      let data = table_transaksi.row($(this).closest("tr")).data();
+      cetakStruk(data);
+    });
+  });
+
+  function cari() {
+    $("#transaksi").DataTable().ajax.reload();
+  }
+</script>
+{% endblock %}
