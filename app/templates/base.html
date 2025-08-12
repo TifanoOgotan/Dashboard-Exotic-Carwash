@@ -11,6 +11,9 @@
       href="{{ url_for('static', filename='css/style.css') }}"
     />
 
+    <!-- Moment -->
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+
     <!-- Jquery -->
     <script src="{{ url_for('static', filename='plugin/jquery/jquery.min.js') }}"></script>
 
@@ -78,7 +81,12 @@
         </div>
       </div>
       <span class="navbar-brand ms-3">Exotic Carwash & SPA</span>
-      <button class="btn btn-danger" onclick="window.location.href='/auth/logout'">Keluar</button>
+      <button
+        class="btn btn-danger"
+        onclick="window.location.href='/auth/logout'"
+      >
+        Keluar
+      </button>
     </nav>
 
     <div class="d-flex">
@@ -140,6 +148,58 @@
 
       function getAngkaAsli(rupiahStr) {
         return rupiahStr.replace(/[^0-9]/g, "");
+      }
+
+      function cetakStruk(data) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+        <html>
+        <head>
+        <style>
+        @page { size: 50mm auto; margin: 0; }
+        body { font-family: monospace; font-size: 12px; width: 46mm; margin: 0; padding: 5px; }
+        .line { border-top: 1px dashed black; margin: 5px 0; }
+        .item-row {
+            display: flex;
+        }
+        .item-name { flex: 4; }
+        .item-qty { flex: 1; text-align: right; }
+        .item-price { flex: 2; text-align: right; }
+        </style>
+        </head>
+        <body>
+            <div style="text-align:center;">
+                <strong>Exotic Carwash</strong><br>
+                No Transaksi: ${data.id_transaksi}<br>
+                Tanggal: ${data.tanggal}
+                <div class="line"></div>
+            </div>
+            ${data.details
+              .map(
+                (item) => `
+                <div class="item-row">
+                    <div class="item-name">${item.nama_produk}</div>
+                    <div class="item-qty">${item.jumlah}</div>
+                    <div class="item-price">${parseInt(item.harga).toLocaleString("id-ID")}</div>
+                </div>
+            `
+              )
+              .join("")}
+            <div class="line"></div>
+            <div style="display:flex; font-weight:bold;">
+                <div style="flex:4;">TOTAL</div>
+                <div style="flex:2; text-align:right;">${parseInt(data.total_harga).toLocaleString("id-ID")}</div>
+            </div>
+            <br>
+            <div style="text-align:center;">Terima kasih</div>
+
+            <script>
+                window.print();
+                window.close();
+            <\/script>
+        </body>
+        </html>
+    `);
       }
     </script>
 
