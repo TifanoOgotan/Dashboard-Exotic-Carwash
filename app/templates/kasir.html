@@ -430,7 +430,13 @@
             showConfirmButton: false,
             timer: 2000,
           });
-          location.reload();
+
+          if (status_bayar != "BB") {
+            cetakStruk(response.data);
+            reset();
+          } else {
+            location.reload();
+          }
         } else {
           Swal.fire({
             icon: `warning`,
@@ -449,6 +455,17 @@
         });
       },
     });
+  }
+
+  function reset() {
+    $("#nopol").val("");
+    $("#nama_pelanggan").val("");
+    $("#nama_kendaraan").val("");
+    $("#no_hp").val("");
+    $("#total_harga").val(0);
+    $("#status_bayar").val("-- Pilih Pembayaran --");
+    $("#edit").val("F");
+    $("#produk").DataTable().clear().draw();
   }
 </script>
 {% endblock %}
