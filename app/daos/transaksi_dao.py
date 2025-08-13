@@ -1,6 +1,7 @@
 from app import db
 from app.models.transaksi_model import Transaksi, DetailTransaksi
 from app.models.produk_model import Produk
+from app.models.pelanggan_model import Pelanggan
 from datetime import date
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
@@ -25,8 +26,20 @@ def get_new_id_transaksi_today():
     
 def get_transaksi_by_date(tanggal_awal, tanggal_akhir):
     try:
-        transaksi = Transaksi.query.filter(Transaksi.tanggal >= tanggal_awal, Transaksi.tanggal <= tanggal_akhir).all()
-        return [t.to_dict() for t in transaksi]
+        transaksi = (
+            db.session.query(Transaksi, Pelanggan)
+            .join(Pelanggan, Transaksi.nopol == Pelanggan.nopol)
+            .filter(Transaksi.tanggal >= tanggal_awal,
+                    Transaksi.tanggal <= tanggal_akhir)
+            .all()
+        )
+        return [
+            {
+                **t.to_dict(),
+                "pelanggan": p.to_dict()
+            }
+            for t, p in transaksi
+        ]
     except Exception as e:
         print("Error get_all_produk:", e)
         return None

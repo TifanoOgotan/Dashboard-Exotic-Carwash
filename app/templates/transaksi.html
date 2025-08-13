@@ -80,7 +80,7 @@
 
     const table_transaksi = $("#transaksi").DataTable({
       dom: "lrtip", // hilangkan search default
-      scrollY: "400px",
+      scrollY: "330px",
       scrollCollapse: true,
       paging: false,
       processing: true,
@@ -122,6 +122,7 @@
           render: function (data, type, row) {
             return `
             <button class="btn btn-sm btn-primary btn-detail">Detail</button>
+            <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>
             <button class="btn btn-sm btn-warning edit-btn"
               data-id="${row.id_transaksi}"
               data-tanggal="${row.tanggal}"
@@ -213,6 +214,46 @@
       });
 
       html += "</tbody></table>";
+      return html;
+    }
+
+    $("#transaksi tbody").on("click", ".btn-pelanggan", function () {
+      var tr = $(this).closest("tr");
+      var row = table_transaksi.row(tr);
+
+      if (row.child.isShown()) {
+        // Tutup detail
+        row.child.hide();
+        tr.removeClass("shown");
+      } else {
+        // Buka detail
+        row.child(formatPelanggan(row.data())).show();
+        tr.addClass("shown");
+      }
+    });
+
+    // Fungsi format detail pelanggan
+    function formatPelanggan(d) {
+      let html = `
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">No Polisi</th>
+                    <th style="width: 30%;">Nama Pelanggan</th>
+                    <th style="width: 25%;">Nama Kendaraan</th>
+                    <th style="width: 25%;">No HP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${d.pelanggan.nopol}</td>
+                    <td>${d.pelanggan.nama_pelanggan}</td>
+                    <td>${d.pelanggan.nama_kendaraan}</td>
+                    <td>${d.pelanggan.no_hp}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
       return html;
     }
 

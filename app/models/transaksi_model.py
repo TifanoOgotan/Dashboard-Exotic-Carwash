@@ -8,10 +8,11 @@ class Transaksi(db.Model):
 
     id_transaksi = db.Column(db.String(8), primary_key=True)
     tanggal = db.Column(db.Date, primary_key=True)
-    nopol = db.Column(db.String(20), nullable=False)
+    nopol = db.Column(db.String(20), db.ForeignKey("ec_pelanggan.nopol"))
     status_bayar = db.Column(db.String(2), nullable=False)
     total_harga = db.Column(db.Integer, nullable=False)
     details = relationship("DetailTransaksi", back_populates="transaksi",cascade="all, delete-orphan")
+    pelanggan = relationship("Pelanggan", backref="transaksi")
 
     def __init__(self, id_transaksi, tanggal, nopol, status_bayar, total_harga):
         self.id_transaksi = id_transaksi
