@@ -7,14 +7,17 @@ produk_bp = Blueprint('produk', __name__, url_prefix='/produk')
 def produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
     return render_template('produk.html')
 
 @produk_bp.route('/data', methods=['POST'])
-def produk_data():
+def data_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
     data = produk_dao.get_all_produk()
     return jsonify({"data": data})
 
@@ -22,7 +25,10 @@ def produk_data():
 def tambah_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
     param = request.get_json()
     nama_produk = param.get('nama_produk')
     jenis = param.get('jenis')
@@ -35,7 +41,10 @@ def tambah_produk():
 def update_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
     param = request.get_json()
     id_produk = param.get('id_produk')
     nama_produk = param.get('nama_produk')
@@ -49,6 +58,9 @@ def update_produk():
 def delete_produk(id_produk):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
     hasil = produk_dao.delete_produk(id_produk)
     return jsonify(hasil)
