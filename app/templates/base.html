@@ -34,10 +34,7 @@
     <!-- Font Awesome 6 via CDN -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-      integrity="sha512-..."
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
+      href="{{ url_for('static', filename='plugin/fontawesome/css/font-awesome.min.css') }}"
     />
 
     <!-- Datatable -->
@@ -151,7 +148,7 @@
       }
 
       function cetakStruk(data) {
-        const printWindow = window.open('', '_blank');
+        const printWindow = window.open("", "_blank");
         printWindow.document.write(`
         <html>
         <head>
@@ -180,7 +177,9 @@
                 <div class="item-row">
                     <div class="item-name">${item.nama_produk}</div>
                     <div class="item-qty">${item.jumlah}</div>
-                    <div class="item-price">${parseInt(item.harga).toLocaleString("id-ID")}</div>
+                    <div class="item-price">${parseInt(
+                      item.harga
+                    ).toLocaleString("id-ID")}</div>
                 </div>
             `
               )
@@ -188,7 +187,9 @@
             <div class="line"></div>
             <div style="display:flex; font-weight:bold;">
                 <div style="flex:4;">TOTAL</div>
-                <div style="flex:2; text-align:right;">${parseInt(data.total_harga).toLocaleString("id-ID")}</div>
+                <div style="flex:2; text-align:right;">${parseInt(
+                  data.total_harga
+                ).toLocaleString("id-ID")}</div>
             </div>
             <br>
             <div style="text-align:center;">Terima kasih</div>

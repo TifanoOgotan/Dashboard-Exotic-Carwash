@@ -1,40 +1,37 @@
-from app.models.user_model import Pegawai
+from app.models.user_model import User
 from app import db
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-def get_pegawai_by_username(username):
+def get_user_by_username(username):
     try:
-        return Pegawai.query.filter_by(username=username).first()
+        return User.query.filter_by(username=username).first()
     except SQLAlchemyError as e:
-        print("Error get_pegawai_by_username:", e)
+        print("Error get_user_by_username:", e)
         return None
 
-def get_all_pegawai():
+def get_all_user():
     try:
-        return Pegawai.query.all()
+        return User.query.all()
     except Exception as e:
-        print("Error get_all_pegawai:", e)
+        print("Error get_all_user:", e)
         return []
     
-def insert_pegawai(data):
+def insert_user(data):
     try:
-        pegawai = Pegawai(
-            nama_pegawai=data['nama_pegawai'],
+        user = User(
+            nama=data['nama'],
             username=data['username'],
             password=data['password'],
-            jabatan=data['jabatan'],
-            no_hp=data['no_hp'],
-            tgl_masuk=data['tgl_masuk'],
-            status=data['status']
+            jabatan=data['jabatan']
         )
-        db.session.add(pegawai)
+        db.session.add(user)
         db.session.commit()
-        return {"status":True, "message":"Berhasil menyimpan pegawai !!!"}
+        return {"status":True, "message":"Berhasil menyimpan user !!!"}
     except IntegrityError as e:
         db.session.rollback()
-        print("Error insert_pegawai:", e)
-        return {"status": False, "message": "Pegawai sudah terdaftar !!!"}
+        print("Error insert_user:", e)
+        return {"status": False, "message": "User sudah terdaftar !!!"}
     except Exception as e:
         db.session.rollback() 
-        print("Error insert_pegawai:", e)
-        return {"status":False, "message":"Gagal menyimpan pegawai !!!"}
+        print("Error insert_user:", e)
+        return {"status":False, "message":"Gagal menyimpan user !!!"}

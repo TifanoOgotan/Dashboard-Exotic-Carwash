@@ -8,18 +8,17 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = user_dao.get_pegawai_by_username(username)
+        user = user_dao.get_user_by_username(username)
         if user and user.password == password:
             session['person'] = {
-                "nama": user.nama_pegawai.title(),
+                "nama": user.nama.title(),
                 "username": user.username,
-                "jabatan": user.jabatan,
-                "no_hp": user.no_hp
+                "jabatan": user.jabatan
             }
 
             session['menus'] = menu_dao.get_menu_by_akses(user.jabatan)
 
-            flash(f"Login Berhasil \nSelamat Datang {user.nama_pegawai.title()}", "success")
+            flash(f"Login Berhasil \nSelamat Datang {user.nama.title()}", "success")
             return redirect(url_for('base.home'))
         else:
             flash("Username atau Password salah!", "error")

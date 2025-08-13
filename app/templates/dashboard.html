@@ -1,4 +1,48 @@
 {% extends 'base.html' %} {% block content %}
 <h2>Dashboard</h2>
-<hr/>
+<hr />
+<div class="row">
+  <div class="col">
+    <div class="card" style="background-color: green; color: white">
+      <div class="card-header">
+        <h4>
+          <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+          Transaksi Hari Ini
+        </h4>
+      </div>
+      <div class="card-body">
+        <h3>{{data.total_transaksi}}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card" style="background-color: green; color: white">
+      <div class="card-header">
+        <h4>
+          <i class="fa fa-line-chart" aria-hidden="true"></i>
+          Pendapatan Hari Ini
+        </h4>
+      </div>
+      <div class="card-body">
+        <h3>Rp. {{data.pendapatan}}</h3>
+      </div>
+    </div>
+  </div>
+  {% if data.total_bb > 0 %}
+  <div class="col">
+    <div class="card bg-warning" style="color: white">
+      <div class="card-header">
+        <h4>
+          <i class="fa fa-times-circle-o" aria-hidden="true"></i>
+          Belum Bayar Hari Ini
+        </h4>
+      </div>
+      <div class="card-body">
+        <h3>{{data.total_bb}}</h3>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}
