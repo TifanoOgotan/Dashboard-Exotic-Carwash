@@ -7,7 +7,10 @@ kasir_bp = Blueprint('kasir', __name__, url_prefix='/kasir')
 def kasir():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
     daftar = pelanggan_dao.get_all_pelanggan()
     return render_template('kasir.html',daftar=daftar)
 
@@ -15,7 +18,10 @@ def kasir():
 def simpan_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
-        return redirect(url_for('auth.login'))  # Arahkan ke endpoint login
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
     param = request.get_json()
     nopol = param.get('nopol')
     nama_pelanggan = param.get('nama_pelanggan')
