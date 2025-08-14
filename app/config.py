@@ -1,6 +1,9 @@
 import os 
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env")  # baca file .env
 
 class Config:
-    SECRET_KEY = 'ini_rahasiamu'  # ganti untuk production
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:ifan@localhost:5432/postgres'
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

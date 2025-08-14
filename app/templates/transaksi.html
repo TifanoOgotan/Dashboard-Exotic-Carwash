@@ -71,16 +71,24 @@
       <tbody></tbody>
     </table>
   </div>
+  <div class="row">
+    <div class="col"><p id="total_cash" style="text-align: center"></p></div>
+    <div class="col">
+      <p id="total_transfer" style="text-align: center"></p>
+    </div>
+    <div class="col"><p id="total_belum" style="text-align: center"></p></div>
+  </div>
 </div>
 {% endblock %} {% block script %}
 <script>
   $(document).ready(function () {
+    const jabatan = "{{session.person.jabatan}}"
     $("#tanggal_awal").val(moment().format("DD-MMM-YYYY"));
     $("#tanggal_akhir").val(moment().format("DD-MMM-YYYY"));
 
     const table_transaksi = $("#transaksi").DataTable({
       dom: "lrtip", // hilangkan search default
-      scrollY: "330px",
+      scrollY: "292px",
       scrollCollapse: true,
       paging: false,
       processing: true,
@@ -120,20 +128,27 @@
           orderable: false,
           searchable: false,
           render: function (data, type, row) {
-            return `
+            let btns = `
             <button class="btn btn-sm btn-primary btn-detail">Detail</button>
             <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>
-            <button class="btn btn-sm btn-warning edit-btn"
-              data-id="${row.id_transaksi}"
-              data-tanggal="${row.tanggal}"
-              data-nopol="${row.nopol}"
-              data-status="${row.status_bayar}"
-              data-harga="${row.total_harga}"
-              data-details="${row.details}"
-              data-bs-toggle="modal"
-              data-bs-target="#editModal">Edit</button>
             <button class="btn btn-sm btn-success btn-cetak"
               data-id="${row.id_transaksi}">Cetak Ulang</button>`;
+            if ("DEV OWNER ADMIN".includes(jabatan)) {
+              if (row.status_bayar === "BB") {
+                btns += `
+                  <button class="btn btn-sm btn-warning edit-btn"
+                    data-id="${row.id_transaksi}"
+                    data-tanggal="${row.tanggal}"
+                    data-nopol="${row.nopol}"
+                    data-status="${row.status_bayar}"
+                    data-harga="${row.total_harga}"
+                    data-details="${row.details}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editModal">Edit</button>
+                `;
+              }
+            }
+            return btns;
           },
         },
       ],
@@ -152,6 +167,46 @@
           sortAscending: ": aktifkan untuk mengurutkan kolom secara menaik",
           sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
         },
+      },
+      drawCallback: function (settings) {
+        let api = this.api(); // ✅ ambil instance DataTable
+        let data = api.rows({ search: "applied" }).data().toArray();
+
+        let totalCash = 0,
+          totalTransfer = 0,
+          totalBelum = 0;
+        let jmlCash = 0,
+          jmlTransfer = 0,
+          jmlBelum = 0;
+
+        data.forEach((row) => {
+          if (row.status_bayar === "CS") {
+            totalCash += row.total_harga;
+            jmlCash++;
+          } else if (row.status_bayar === "TF") {
+            totalTransfer += row.total_harga;
+            jmlTransfer++;
+          } else {
+            totalBelum += row.total_harga;
+            jmlBelum++;
+          }
+        });
+        // Update ke elemen HTML
+        $("#total_cash").text(
+          `CASH : ${jmlCash} transaksi - Rp ${totalCash.toLocaleString(
+            "id-ID"
+          )}`
+        );
+        $("#total_transfer").text(
+          `TRANSFER : ${jmlTransfer} transaksi - Rp ${totalTransfer.toLocaleString(
+            "id-ID"
+          )}`
+        );
+        $("#total_belum").text(
+          `BELUM BAYAR : ${jmlBelum} transaksi - Rp ${totalBelum.toLocaleString(
+            "id-ID"
+          )}`
+        );
       },
     });
 

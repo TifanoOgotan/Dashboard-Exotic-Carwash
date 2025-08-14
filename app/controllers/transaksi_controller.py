@@ -8,7 +8,7 @@ def transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN VIEW':
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR VIEW':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     return render_template('transaksi.html')
@@ -18,7 +18,7 @@ def data_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN VIEW':
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR VIEW':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     tanggal_awal = request.form.get("tanggal_awal")
