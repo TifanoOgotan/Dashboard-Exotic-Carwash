@@ -24,15 +24,23 @@ def get_new_id_transaksi_today():
         print("Error get_last_id_transaksi_today:", e)
         return None
     
-def get_transaksi_by_date(tanggal_awal, tanggal_akhir):
+def get_transaksi_by_date(tanggal_awal, tanggal_akhir, status_bayar=None):
     try:
-        transaksi = (
+        query = (
             db.session.query(Transaksi, Pelanggan)
             .join(Pelanggan, Transaksi.nopol == Pelanggan.nopol)
-            .filter(Transaksi.tanggal >= tanggal_awal,
-                    Transaksi.tanggal <= tanggal_akhir)
-            .all()
+            .filter(
+                Transaksi.tanggal >= tanggal_awal,
+                Transaksi.tanggal <= tanggal_akhir
+            )
         )
+
+        # kalau status_bayar ada isinya → tambahin filter
+        if status_bayar:
+            query = query.filter(Transaksi.status_bayar == status_bayar)
+
+        transaksi = query.all()
+
         return [
             {
                 **t.to_dict(),
@@ -41,7 +49,7 @@ def get_transaksi_by_date(tanggal_awal, tanggal_akhir):
             for t, p in transaksi
         ]
     except Exception as e:
-        print("Error get_all_produk:", e)
+        print("Error get_transaksi_by_date:", e)
         return None
 
 def insert_transaksi(nopol, status_bayar, total_harga, details_list):

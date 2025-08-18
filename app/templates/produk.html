@@ -317,7 +317,7 @@
       $("#edit_harga").val(parseInt(btn.data("harga")).toLocaleString("id-ID"));
       $("#edit_stok").val(btn.data("stok"));
 
-      const jenis = btn.data("jenis")
+      const jenis = btn.data("jenis");
       if (jenis === "JASA") {
         $("#edit_stok").prop("disabled", true).val("1"); // disable dan kosongkan
       } else {
@@ -350,7 +350,7 @@
         confirmButtonText: "Iya, hapus !!!",
         cancelButtonText: "Batal",
       }).then((result) => {
-        if (result.value) {
+        if (result.isConfirmed) {
           $.ajax({
             url: `/produk/delete/${id}`,
             type: "POST",
@@ -477,8 +477,7 @@
             showConfirmButton: false,
             timer: 2000,
           });
-          await $("#produk").DataTable().ajax.reload();
-          $("#tambahModal").modal("hide");
+          location.reload();
         } else {
           Swal.fire({
             icon: `warning`,

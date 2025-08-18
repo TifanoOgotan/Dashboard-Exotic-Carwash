@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from app.daos import menu_dao, user_dao, pelanggan_dao, transaksi_dao
+from datetime import date, timedelta
 
 kasir_bp = Blueprint('kasir', __name__, url_prefix='/kasir')
 
@@ -12,7 +13,9 @@ def kasir():
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     daftar = pelanggan_dao.get_all_pelanggan()
-    return render_template('kasir.html',daftar=daftar)
+    data_transaksi_bb = transaksi_dao.get_transaksi_by_date(date.today(), date.today(), 'BB')
+    print(data_transaksi_bb)
+    return render_template('kasir.html',daftar=daftar, data_transaksi_bb = data_transaksi_bb)
 
 @kasir_bp.route('/simpan-transaksi', methods=['POST'])
 def simpan_transaksi():

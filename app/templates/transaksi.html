@@ -65,7 +65,7 @@
           <th>Nomor Kendaraan</th>
           <th>Pembayaran</th>
           <th>Total Harga</th>
-          <th>Aksi</th>
+          <th style="width: 30%">Aksi</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -79,16 +79,131 @@
     <div class="col"><p id="total_belum" style="text-align: center"></p></div>
   </div>
 </div>
+
+<div
+  class="modal fade"
+  id="editModal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <form id="editForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Transaksi</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-3">
+            <label
+              for="edit_id_transaksi"
+              class="col-sm-2 col-form-label"
+              style="text-align: right"
+              >Id Transaksi</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="edit_id_transaksi"
+                name="id_transaksi"
+                readonly
+                disabled
+              />
+            </div>
+            <label
+              for="edit_tanggal"
+              class="col-sm-2 col-form-label"
+              style="text-align: right"
+              >Tanggal</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="edit_tanggal"
+                name="tanggal"
+                readonly
+                disabled
+              />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label
+              for="edit_nopol"
+              class="col-sm-2 col-form-label"
+              style="text-align: right"
+              >Nomor Kendaraan</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="edit_nopol"
+                name="nopol"
+                readonly
+                disabled
+              />
+            </div>
+            <label
+              for="edit_total_harga"
+              class="col-sm-2 col-form-label"
+              style="text-align: right"
+              >Total Harga</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="text"
+                class="form-control"
+                id="edit_total_harga"
+                readonly
+                disabled
+              />
+            </div>
+          </div>
+          <div class="row">
+            <label
+              for="edit_status_bayar"
+              class="col-sm-3 col-form-label"
+              style="text-align: right"
+              >Pembayaran</label
+            >
+            <div class="col-sm-7">
+              <select class="form-select" id="edit_status_bayar">
+                <option value="BB">Belum Bayar</option>
+                <option value="CS">Cash</option>
+                <option value="TF">Transfer</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" onclick="simpanEdit()">
+            Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %} {% block script %}
 <script>
   $(document).ready(function () {
-    const jabatan = "{{session.person.jabatan}}"
+    const jabatan = "{{session.person.jabatan}}";
     $("#tanggal_awal").val(moment().format("DD-MMM-YYYY"));
     $("#tanggal_akhir").val(moment().format("DD-MMM-YYYY"));
 
     const table_transaksi = $("#transaksi").DataTable({
       dom: "lrtip", // hilangkan search default
-      scrollY: "292px",
+      scrollY: "400px",
       scrollCollapse: true,
       paging: false,
       processing: true,
@@ -130,9 +245,7 @@
           render: function (data, type, row) {
             let btns = `
             <button class="btn btn-sm btn-primary btn-detail">Detail</button>
-            <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>
-            <button class="btn btn-sm btn-success btn-cetak"
-              data-id="${row.id_transaksi}">Cetak Ulang</button>`;
+            <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>`;
             if ("DEV OWNER ADMIN".includes(jabatan)) {
               if (row.status_bayar === "BB") {
                 btns += `
@@ -144,8 +257,11 @@
                     data-harga="${row.total_harga}"
                     data-details="${row.details}"
                     data-bs-toggle="modal"
-                    data-bs-target="#editModal">Edit</button>
-                `;
+                    data-bs-target="#editModal">Edit</button>`;
+              } else {
+                btns += `
+                  <button class="btn btn-sm btn-success btn-cetak"
+                    data-id="${row.id_transaksi}">Cetak Ulang</button>`;
               }
             }
             return btns;
@@ -316,10 +432,81 @@
       let data = table_transaksi.row($(this).closest("tr")).data();
       cetakStruk(data);
     });
+
+    $("#transaksi").on("click", ".edit-btn", function () {
+      const btn = $(this);
+      $("#edit_id_transaksi").val(btn.data("id"));
+      $("#edit_tanggal").val(btn.data("tanggal"));
+      $("#edit_nopol").val(btn.data("nopol"));
+      $("#edit_status_bayar").val(btn.data("status"));
+      $("#edit_total_harga").val(
+        parseInt(btn.data("harga")).toLocaleString("id-ID")
+      );
+    });
   });
 
   function cari() {
     $("#transaksi").DataTable().ajax.reload();
+  }
+
+  async function simpanEdit() {
+    let id_transaksi = $("#edit_id_transaksi").val();
+    let status_bayar = $("#edit_status_bayar").val();
+
+    if (status_bayar == "BB") {
+      Swal.fire({
+        icon: `warning`,
+        title: `Pembayaran Tidak Berubah !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Yakin?",
+      text: `Ingin menyimpan transaksi ${id_transaksi} ?`,
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Iya, Simpan !!!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      $.ajax({
+        url: "/transaksi/update-transaksi", // Endpoint Flask
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ id_transaksi, status_bayar }),
+        success: async function (response) {
+          if (response.status) {
+            await Swal.fire({
+              icon: `success`,
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000,
+            });
+            await $("#transaksi").DataTable().ajax.reload();
+            $("#editModal").modal("hide");
+          } else {
+            Swal.fire({
+              icon: `warning`,
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: `warning`,
+            title: `Terjadi kesalahan saat mengupdate transaksi !!!`,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        },
+      });
+    });
   }
 </script>
 {% endblock %}
