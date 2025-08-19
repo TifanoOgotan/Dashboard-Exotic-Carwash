@@ -37,3 +37,21 @@ def simpan_transaksi():
     pelanggan_dao.check_pelanggan(nopol, nama_pelanggan, nama_kendaraan, no_hp, edit)
     hasil = transaksi_dao.insert_transaksi(nopol, status_bayar, total_harga, details)
     return jsonify(hasil)
+
+@kasir_bp.route('/edit-transaksi', methods=['POST'])
+def edit_transaksi():
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
+    param = request.get_json()
+    id_transaksi = param.get('id_transaksi')
+    tanggal = param.get('tanggal')
+    nopol = param.get('nopol')
+    total_harga = param.get('total_harga')
+    status_bayar = param.get('status_bayar')
+    details = param.get('details')
+    hasil = transaksi_dao.update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, details)
+    return jsonify(hasil)

@@ -189,6 +189,8 @@
           ></button>
         </div>
         <div class="modal-body">
+          <input type="hidden" id="len_details" />
+          <input type="hidden" id="edit_details" value="F" />
           <div class="row mb-3">
             <label
               for="edit_id_transaksi"
@@ -746,7 +748,9 @@
       if (typeof details === "string") {
         details = JSON.parse(details);
       }
-      edit_produk.clear().rows.add(details).draw();
+      let detailsCopy = JSON.parse(JSON.stringify(details));
+      $("#len_details").val(detailsCopy.length);
+      edit_produk.clear().rows.add(detailsCopy).draw();
     });
 
     const edit_produk = $("#edit_produk").DataTable({
@@ -823,7 +827,7 @@
           .column(4, { search: "applied" })
           .data()
           .reduce((a, b) => a + parseInt(b || 0), 0);
-        $("#total_harga").val(total.toLocaleString("id-ID"));
+        $("#edit_total_harga").val(total.toLocaleString("id-ID"));
       });
 
     $("#edit_produk tbody").on("change", ".edit-worker-input", function () {
@@ -848,9 +852,15 @@
           timer: 2000,
         });
         $(this).val(data.jumlah);
+        if (data.edit != "T") {
+          $("#edit_details").val("F");
+        }
       } else {
         data.jumlah = newValue;
         data.total = data.harga * newValue;
+        if (data.edit != "T") {
+          $("#edit_details").val("T");
+        }
       }
       row.data(data).draw(false);
     });
@@ -934,6 +944,74 @@
             timer: 2000,
           });
 
+          if (status_bayar != "BB") {
+            cetakStruk(response.data);
+            location.reload();
+          } else {
+            location.reload();
+          }
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat menyimpan transaksi !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+    });
+  }
+
+  async function simpanEdit() {
+    let id_transaksi = $("#edit_id_transaksi").val();
+    let tanggal = $("#edit_tanggal").val();
+    let nopol = $("#edit_nopol").val();
+    let total_harga = getAngkaAsli($("#edit_total_harga").val());
+    let status_bayar = $("#edit_status_bayar").val();
+    let details = $("#edit_produk").DataTable().rows().data().toArray();
+    let len_details = $("#len_details").val();
+    if (
+      status_bayar == "BB" &&
+      details.length == len_details &&
+      $("#edit_details").val() == "F"
+    ) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Data Transaksi tidak berubah !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    $.ajax({
+      url: "/kasir/edit-transaksi", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        id_transaksi,
+        tanggal,
+        nopol,
+        total_harga,
+        status_bayar,
+        details,
+      }),
+      success: async function (response) {
+        if (response.status) {
+          await Swal.fire({
+            icon: `success`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
           if (status_bayar != "BB") {
             cetakStruk(response.data);
             location.reload();

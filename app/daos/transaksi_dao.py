@@ -3,7 +3,7 @@ from app.models.transaksi_model import Transaksi, DetailTransaksi
 from app.models.produk_model import Produk
 from app.models.pelanggan_model import Pelanggan
 from datetime import date
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 def get_new_id_transaksi_today():
@@ -30,8 +30,10 @@ def get_transaksi_by_date(tanggal_awal, tanggal_akhir, status_bayar=None):
             db.session.query(Transaksi, Pelanggan)
             .join(Pelanggan, Transaksi.nopol == Pelanggan.nopol)
             .filter(
-                Transaksi.tanggal >= tanggal_awal,
-                Transaksi.tanggal <= tanggal_akhir
+                and_(
+                    Transaksi.tanggal >= tanggal_awal,
+                    Transaksi.tanggal <= tanggal_akhir
+                )
             )
         )
 
@@ -105,4 +107,69 @@ def insert_transaksi(nopol, status_bayar, total_harga, details_list):
     except Exception as e:
         db.session.rollback() 
         print("Error insert_transaksi:", e)
+        return {"status":False, "message":"Gagal menyimpan transaksi !!!"}
+    
+def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, details_list):
+    try:
+        transaksi = db.session.query(Transaksi).filter_by(id_transaksi=id_transaksi, tanggal=tanggal).first()
+        transaksi.status_bayar = status_bayar
+        transaksi.total_harga = total_harga
+        old_details = {d.id_produk: d for d in transaksi.details}
+        details_data = []
+        data = {}
+        for item in details_list:
+            id_produk = item["id_produk"]
+            jumlah_baru = item["jumlah"]
+
+            produk = db.session.get(Produk, id_produk)
+
+            print('COBA', id_produk, id_produk in old_details)
+
+            if id_produk in old_details:
+                # sudah ada detail sebelumnya
+                detail = old_details[id_produk]
+                print(detail)
+                jumlah_lama = detail.jumlah
+                if jumlah_baru != jumlah_lama:
+                    selisih = jumlah_baru - jumlah_lama
+                    produk.stok -= selisih  
+
+                    detail.jumlah = jumlah_baru
+                    detail.total = jumlah_baru * detail.harga
+                    detail.worker = item.get("worker")
+            else:
+                if item["jenis"].upper() == "BARANG":
+                    produk.stok -= jumlah_baru
+                detail = DetailTransaksi(
+                    id_transaksi=id_transaksi,
+                    tanggal=date.today(),
+                    id_produk=item["id_produk"],
+                    nama_produk=item["nama_produk"],
+                    jenis=item["jenis"],
+                    harga=item["harga"],
+                    jumlah=jumlah_baru,
+                    worker=item["worker"],
+                    total=item["total"],
+                )
+                db.session.add(detail)
+
+            detail_data = {
+                'nama_produk':item["nama_produk"],
+                'harga':item["harga"],
+                'jumlah':item["jumlah"],
+                'total':item['total']
+            }
+            details_data.append(detail_data)
+
+        data['id_transaksi'] = id_transaksi
+        data['tanggal'] = date.today().strftime('%d-%b-%Y')
+        data['nopol'] = nopol
+        data['status_bayar'] = status_bayar
+        data['total_harga'] = total_harga
+        data['details'] = details_data
+        db.session.commit()
+        return {"status":True, "message":"Berhasil menyimpan transaksi !!!","data":data}
+    except Exception as e:
+        db.session.rollback() 
+        print("Error update_transaksi:", e)
         return {"status":False, "message":"Gagal menyimpan transaksi !!!"}
