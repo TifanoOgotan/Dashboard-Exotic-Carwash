@@ -1,0 +1,458 @@
+{% extends 'base.html' %} {% block content %}
+<h3>Pegawai</h3>
+<hr />
+<div class="card card-zoom">
+  <div class="card-header">
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-6" style="justify-items: center">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="cari_pegawai"
+            placeholder="Cari Pegawai"
+          />
+        </div>
+      </div>
+      <div class="col-3" style="text-align: right">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#tambahModal"
+        >
+          Tambah Pegawai
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table
+      id="pegawai"
+      class="display table table-light table-striped-columns"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Nomor Hp</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<hr />
+<h3>Gaji</h3>
+<hr />
+<div class="card card-zoom">
+  <div class="card-header">
+    <div class="row">
+      <div class="col-2">
+        <select id="nama_pegawai" class="form-control" style="width: 100%">
+          <option disabled selected>-- Pilih Pegawai --</option>
+          {% for p in pegawai_list %}
+          <option value="{{ p.nama }}">{{ p.nama }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-7">
+        <div class="row">
+          <label class="col-2 col-form-label" style="text-align: right"
+            >Tanggal</label
+          >
+          <div class="col-3">
+            <input
+              type="text"
+              class="form-control"
+              name="tanggal_awal"
+              id="tanggal_awal"
+              readonly
+            />
+          </div>
+          <label class="col-1 col-form-label" style="text-align: center"
+            >-</label
+          >
+          <div class="col-3">
+            <input
+              type="text"
+              class="form-control"
+              name="tanggal_akhir"
+              id="tanggal_akhir"
+              readonly
+            />
+          </div>
+          <div class="col">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cari()"
+              style="width: 75%"
+            >
+              Cari
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-3" style="justify-items: center">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="cari"
+            placeholder="Cari"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table
+      id="detail"
+      class="display table table-light table-striped-columns"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>ID Transaksi</th>
+          <th>Tanggal</th>
+          <th>Nama Produk</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Tambah Produk-->
+<div
+  class="modal fade"
+  id="tambahModal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Data Pegawai</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label
+            for="t_nama"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Nama Pegawai</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="t_nama"
+              placeholder="Nama Pegawai"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <label
+            for="t_no_hp"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Nomor Hp</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="t_no_hp"
+              placeholder="Nomor Hp"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="simpan()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(function () {
+    $("#tanggal_awal")
+      .datepicker({
+        format: "dd-M-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+      })
+      .on("changeDate", function (e) {
+        var tanggalAwal = $("#tanggal_awal").datepicker("getDate");
+        $("#tanggal_akhir").datepicker("setStartDate", tanggalAwal);
+
+        // jika tanggal akhir lebih kecil dari tanggal awal, reset tanggal akhir
+        var tanggalAkhir = $("#tanggal_akhir").datepicker("getDate");
+        if (tanggalAkhir && tanggalAkhir < tanggalAwal) {
+          $("#tanggal_akhir").datepicker("setDate", tanggalAwal);
+        }
+      });
+
+    // inisialisasi datepicker tanggal akhir
+    $("#tanggal_akhir")
+      .datepicker({
+        format: "dd-M-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+      })
+      .on("changeDate", function (e) {
+        var tanggalAkhir = $("#tanggal_akhir").datepicker("getDate");
+        $("#tanggal_awal").datepicker("setEndDate", tanggalAkhir);
+
+        // jika tanggal awal lebih besar dari tanggal akhir, reset tanggal awal
+        var tanggalAwal = $("#tanggal_awal").datepicker("getDate");
+        if (tanggalAwal && tanggalAwal > tanggalAkhir) {
+          $("#tanggal_awal").datepicker("setDate", tanggalAkhir);
+        }
+      });
+
+    const table_pegawai = $("#pegawai").DataTable({
+      dom: "lrtip", // hilangkan search default
+      scrollY: "330px",
+      scrollCollapse: true,
+      paging: false,
+      processing: true,
+      order: [],
+      serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya
+      ajax: {
+        url: "/pegawai/data",
+        type: "POST",
+      },
+      columns: [
+        { data: "nama" },
+        { data: "no_hp" },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            return `
+            <button class="btn btn-sm btn-danger delete-btn"
+              data-nama="${row.nama}">Hapus</button>`;
+          },
+        },
+      ],
+      language: {
+        decimal: "",
+        emptyTable: "Tidak ada data yang tersedia pada tabel ini",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+        lengthMenu: "Tampilkan _MENU_ data",
+        loadingRecords: "Memuat...",
+        processing: "Memproses...",
+        search: "Cari:",
+        zeroRecords: "Tidak ditemukan data yang sesuai",
+        aria: {
+          sortAscending: ": aktifkan untuk mengurutkan kolom secara menaik",
+          sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
+        },
+      },
+    });
+
+    $.fn.dataTable.ext.search.push((settings, data) => {
+      const val = $("#cari_pegawai").val().toLowerCase();
+      return !val || data[0].toLowerCase().includes(val);
+    });
+
+    $("#cari_pegawai").on("keyup", () => table_pegawai.draw());
+
+    $("#pegawai").on("click", ".delete-btn", function () {
+      const nama = $(this).data("nama");
+      Swal.fire({
+        title: "Yakin?",
+        text: `Ingin menghapus pegawai ${nama} ?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Iya, hapus !!!",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/pegawai/delete/${nama}`,
+            type: "POST",
+            success: function (response) {
+              if (response.status) {
+                Swal.fire({
+                  icon: `success`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+                table_pegawai.ajax.reload();
+              } else {
+                Swal.fire({
+                  icon: `warning`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+              }
+            },
+            error: function () {
+              Swal.fire({
+                icon: `warning`,
+                title: `Terjadi kesalahan saat menghapus pegawai !!!`,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            },
+          });
+        }
+      });
+    });
+
+    const table_detail = $("#detail").DataTable({
+      dom: "lrtip", // hilangkan search default
+      scrollY: "400px",
+      scrollCollapse: true,
+      paging: false,
+      order: [],
+      columns: [
+        { data: "worker" },
+        { data: "id_transaksi" },
+        { data: "tanggal" },
+        { data: "nama_produk" },
+      ],
+      language: {
+        decimal: "",
+        emptyTable: "Tidak ada data yang tersedia pada tabel ini",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+        lengthMenu: "Tampilkan _MENU_ data",
+        loadingRecords: "Memuat...",
+        processing: "Memproses...",
+        search: "Cari:",
+        zeroRecords: "Tidak ditemukan data yang sesuai",
+        aria: {
+          sortAscending: ": aktifkan untuk mengurutkan kolom secara menaik",
+          sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
+        },
+      },
+      // drawCallback: function (settings) {
+      //   let api = this.api(); // ✅ ambil instance DataTable
+      //   let data = api.rows().data().toArray();
+
+      //   data.forEach((row) => {
+          
+      //   });
+        
+      // },
+    });
+
+    $("#cari").on("keyup", function () {
+      table_detail.search(this.value).draw();
+    });
+  });
+
+  async function simpan() {
+    let nama = $("#t_nama").val();
+    let no_hp = $("#t_no_hp").val();
+
+    $.ajax({
+      url: "/pegawai/tambah-pegawai", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ nama, no_hp }),
+      success: async function (response) {
+        if (response.status) {
+          await Swal.fire({
+            icon: `success`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          location.reload();
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat menambahkan pegawai !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+    });
+  }
+
+  function cari() {
+    let pegawai = $("#nama_pegawai").val();
+    let tanggal_awal = $("#tanggal_awal").val();
+    let tanggal_akhir = $("#tanggal_akhir").val();
+
+    if (!pegawai || !tanggal_awal || !tanggal_akhir) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Pilih Pegawai dan Tanggal Terlebih dahulu !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    $.ajax({
+      url: "/pegawai/detail", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ pegawai, tanggal_awal, tanggal_akhir }),
+      success: async function (response) {
+        if (response.data) {
+          $("#detail").DataTable().clear();
+          $("#detail").DataTable().rows.add(response.data).draw();
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: "Data Tidak Di Temukan !!!",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat mengupdate produk !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+    });
+  }
+</script>
+{% endblock %}

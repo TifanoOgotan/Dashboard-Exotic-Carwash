@@ -1,0 +1,467 @@
+{% extends 'base.html' %} {% block content %}
+<h3>Akses</h3>
+<hr />
+<div class="card card-zoom">
+  <div class="card-header">
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-6" style="justify-items: center">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="cari_akses"
+            placeholder="Cari Akses"
+          />
+        </div>
+      </div>
+      <div class="col-3" style="text-align: right">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#tambahModal"
+        >
+          Tambah Akses
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table
+      id="akses"
+      class="display table table-light table-striped-columns"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Nama</th>
+          <th>Jabatan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Tambah Produk-->
+<div
+  class="modal fade"
+  id="tambahModal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Data Akses</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label
+            for="t_username"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Username</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="t_username"
+              placeholder="Username"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label
+            for="t_password"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Password</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="t_password"
+              placeholder="Password"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label
+            for="t_nama"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Nama</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="t_nama"
+              placeholder="Nama"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label
+            for="t_jabatan"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Jabatan</label
+          >
+          <div class="col-sm-7">
+            <select class="form-select" id="t_jabatan">
+              <option selected disabled>-- Pilih Jabatan --</option>
+              <option value="KASIR">Kasir</option>
+              <option value="ADMIN">Admin</option>
+              <option value="TAMU">Tamu</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="simpan()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="editModal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Data Akses</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label
+            for="edit_username"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Username</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_username"
+              placeholder="Username"
+              disabled
+              readonly
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label
+            for="edit_password"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Password</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_password"
+              placeholder="Password"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label
+            for="edit_nama"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Nama</label
+          >
+          <div class="col-sm-7">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_nama"
+              placeholder="Nama"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label
+            for="edit_jabatan"
+            class="col-sm-3 col-form-label"
+            style="text-align: right"
+            >Jabatan</label
+          >
+          <div class="col-sm-7">
+            <select class="form-select" id="edit_jabatan">
+              <option value="KASIR">Kasir</option>
+              <option value="ADMIN">Admin</option>
+              <option value="TAMU">Tamu</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="simpanEdit()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(function () {
+    const table_akses = $("#akses").DataTable({
+      dom: "lrtip", // hilangkan search default
+      scrollY: "330px",
+      scrollCollapse: true,
+      paging: false,
+      processing: true,
+      order: [],
+      serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya
+      ajax: {
+        url: "/akses/data",
+        type: "POST",
+      },
+      columns: [
+        { data: "username" },
+        { data: "password" },
+        { data: "nama" },
+        { data: "jabatan" },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            return `
+            <button class="btn btn-sm btn-warning edit-btn"
+              data-username="${row.username}"
+              data-password="${row.password}"
+              data-nama="${row.nama}"
+              data-jabatan="${row.jabatan}"
+              data-bs-toggle="modal"
+              data-bs-target="#editModal">Edit</button>
+            <button class="btn btn-sm btn-danger delete-btn"
+              data-nama="${row.nama}">Hapus</button>`;
+          },
+        },
+      ],
+      language: {
+        decimal: "",
+        emptyTable: "Tidak ada data yang tersedia pada tabel ini",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+        lengthMenu: "Tampilkan _MENU_ data",
+        loadingRecords: "Memuat...",
+        processing: "Memproses...",
+        search: "Cari:",
+        zeroRecords: "Tidak ditemukan data yang sesuai",
+        aria: {
+          sortAscending: ": aktifkan untuk mengurutkan kolom secara menaik",
+          sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
+        },
+      },
+    });
+
+    $.fn.dataTable.ext.search.push((settings, data) => {
+      const val = $("#cari_akses").val().toLowerCase();
+      return (
+        !val ||
+        data[0].toLowerCase().includes(val) ||
+        data[2].toLowerCase().includes(val) ||
+        data[3].toLowerCase().includes(val)
+      );
+    });
+
+    $("#cari_akses").on("keyup", () => table_akses.draw());
+
+     $("#akses").on("click", ".edit-btn", function () {
+      const btn = $(this);
+      $("#edit_username").val(btn.data("username"));
+      $("#edit_password").val(btn.data("password"));
+      $("#edit_nama").val(btn.data("nama"));
+      $("#edit_jabatan").val(btn.data("jabatan"));
+    });
+
+    $("#akses").on("click", ".delete-btn", function () {
+      const nama = $(this).data("nama");
+      Swal.fire({
+        title: "Yakin?",
+        text: `Ingin menghapus akses ${nama} ?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Iya, hapus !!!",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/akses/delete/${nama}`,
+            type: "POST",
+            success: function (response) {
+              if (response.status) {
+                Swal.fire({
+                  icon: `success`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+                table_akses.ajax.reload();
+              } else {
+                Swal.fire({
+                  icon: `warning`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+              }
+            },
+            error: function () {
+              Swal.fire({
+                icon: `warning`,
+                title: `Terjadi kesalahan saat menghapus akses !!!`,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            },
+          });
+        }
+      });
+    });
+  });
+
+  async function simpan() {
+    let username = $("#t_username").val();
+    let password = $("#t_password").val();
+    let nama = $("#t_nama").val();
+    let jabatan = $("#t_jabatan").val();
+
+    if (!username || !password || !nama || !jabatan) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Data akses tidak lengkap !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    $.ajax({
+      url: "/akses/tambah-akses", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ username, password, nama, jabatan }),
+      success: async function (response) {
+        if (response.status) {
+          await Swal.fire({
+            icon: `success`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          location.reload();
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat menambahkan akses !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+    });
+  }
+
+  async function simpanEdit() {
+    let username = $("#edit_username").val();
+    let password = $("#edit_password").val();
+    let nama = $("#edit_nama").val();
+    let jabatan = $("#edit_jabatan").val();
+
+    if (!password || !nama || !jabatan) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Data akses tidak lengkap !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    $.ajax({
+      url: "/akses/update-akses", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ username, password, nama, jabatan}),
+      success: async function (response) {
+        if (response.status) {
+          await Swal.fire({
+            icon: `success`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          await $("#akses").DataTable().ajax.reload();
+          $("#editModal").modal("hide");
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat mengupdate akses !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+    });
+  }
+</script>
+{% endblock %}

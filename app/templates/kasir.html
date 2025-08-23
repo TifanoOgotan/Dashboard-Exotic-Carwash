@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block content %}
-<h2>Kasir</h2>
+<h3>Kasir</h3>
 <hr />
-<div class="card">
+<div class="card card-zoom">
   <div class="card-body">
     <input type="hidden" id="edit" value="F" />
     <input type="hidden" id="t_produk" value="" />
@@ -75,6 +75,7 @@
           id="total_harga"
           placeholder="Total Harga"
           value="0"
+          disabled
           readonly
         />
       </div>
@@ -146,7 +147,7 @@
 <hr />
 <h3>Belum Bayar</h3>
 <hr />
-<div class="card">
+<div class="card card-zoom">
   <div class="card-body">
     <table
       id="transaksi"
@@ -357,6 +358,8 @@
 {% endblock %} {% block script %}
 <script>
   $(document).ready(function () {
+    let pegawai_list = {{ pegawai_list|tojson|safe }};
+
     const lov_produk = $("#lov_produk").DataTable({
       scrollY: "400px",
       scrollCollapse: true,
@@ -472,10 +475,21 @@
         {
           data: "worker",
           render: function (data, type, row) {
-            if (row.jenis.toUpperCase() === "JASA") {
-              return `<input type="text" class="form-control form-control-sm worker-input" value="${
-                data || ""
-              }" oninput="this.value = this.value.toUpperCase();"/>`;
+            if (row.jenis.toUpperCase().includes("JASA")) {
+              let options = pegawai_list
+                .map(
+                  (p) =>
+                    `<option value="${p.nama}" ${
+                      p.nama == data ? "selected" : ""
+                    }>
+                      ${p.nama}
+                    </option>`
+                )
+                .join("");
+              return `<select class="form-control form-control-sm worker-input">
+                      <option value="">-- Pilih Pegawai --</option>
+                      ${options}
+                    </select>`;
             } else {
               return data || "-";
             }
@@ -585,6 +599,7 @@
       scrollY: "400px",
       scrollCollapse: true,
       paging: false,
+      order: [],
       data: data_transaksi_bb,
       columns: [
         { data: "id_transaksi" },
@@ -780,10 +795,21 @@
           data: "worker",
           render: function (data, type, row) {
             if ((row?.edit || "F") == "T") {
-              if (row.jenis.toUpperCase() === "JASA") {
-                return `<input type="text" class="form-control form-control-sm edit-worker-input" value="${
-                  data || ""
-                }" oninput="this.value = this.value.toUpperCase();"/>`;
+              if (row.jenis.toUpperCase().includes("JASA")) {
+                let options = pegawai_list
+                  .map(
+                    (p) =>
+                      `<option value="${p.nama}" ${
+                        p.nama == data ? "selected" : ""
+                      }>
+                      ${p.nama}
+                    </option>`
+                  )
+                  .join("");
+                return `<select class="form-control form-control-sm edit-worker-input">
+                      <option value="">-- Pilih Pegawai --</option>
+                      ${options}
+                    </select>`;
               } else {
                 return data || "-";
               }
@@ -831,6 +857,7 @@
       });
 
     $("#edit_produk tbody").on("change", ".edit-worker-input", function () {
+      console.log('MASUK EDIT WORKER')
       const tr = $(this).closest("tr");
       const row = edit_produk.row(tr);
       const data = row.data();

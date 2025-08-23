@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block content %}
-<h2>Produk</h2>
+<h3>Produk</h3>
 <hr />
-<div class="card">
+<div class="card card-zoom">
   <div class="card-header">
     <div class="row">
       <div class="col-3"></div>
@@ -98,6 +98,7 @@
               <option selected disabled>-- Pilih Jenis --</option>
               <option value="BARANG">Barang</option>
               <option value="JASA">Jasa</option>
+              <option value="BARANG JASA">BARANG JASA</option>
             </select>
           </div>
         </div>
@@ -255,6 +256,7 @@
       scrollCollapse: true,
       paging: false,
       processing: true,
+      order: [],
       serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya
       ajax: {
         url: "/produk/data",
@@ -318,10 +320,10 @@
       $("#edit_stok").val(btn.data("stok"));
 
       const jenis = btn.data("jenis");
-      if (jenis === "JASA") {
-        $("#edit_stok").prop("disabled", true).val("1"); // disable dan kosongkan
-      } else {
+      if (jenis.includes("BARANG")) {
         $("#edit_stok").prop("disabled", false); // enable
+      } else {
+        $("#edit_stok").prop("disabled", true).val("1"); // disable dan kosongkan
       }
     });
 

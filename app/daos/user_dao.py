@@ -16,22 +16,59 @@ def get_all_user():
         print("Error get_all_user:", e)
         return []
     
-def insert_user(data):
+
+def get_user_by_akses(akses):
+    try:
+        users = User.query.filter(User.jabatan != akses).all()
+        return [u.to_dict() for u in users]
+    except Exception as e:
+        print("Error get_user_by_akses:", e)
+        return []
+
+def insert_user(username, password, nama, jabatan):
     try:
         user = User(
-            nama=data['nama'],
-            username=data['username'],
-            password=data['password'],
-            jabatan=data['jabatan']
+            username=username,
+            password=password,
+            nama=nama,
+            jabatan=jabatan
         )
         db.session.add(user)
         db.session.commit()
-        return {"status":True, "message":"Berhasil menyimpan user !!!"}
+        return {"status":True, "message":"Berhasil menyimpan akses !!!"}
     except IntegrityError as e:
         db.session.rollback()
         print("Error insert_user:", e)
-        return {"status": False, "message": "User sudah terdaftar !!!"}
+        return {"status": False, "message": "Akses sudah terdaftar !!!"}
     except Exception as e:
         db.session.rollback() 
         print("Error insert_user:", e)
-        return {"status":False, "message":"Gagal menyimpan user !!!"}
+        return {"status":False, "message":"Gagal menyimpan akses !!!"}
+    
+def update_user(username, password, nama, jabatan):
+    try:
+        user = db.session.get(User, username)
+        if not user:
+            return {"status": False, "message": "Akses tidak ditemukan!"}
+        user.password = password
+        user.nama = nama
+        user.jabatan = jabatan
+        db.session.commit()
+        return {"status": True, "message": "Berhasil mengupdate akses!"}
+    except Exception as e:
+        db.session.rollback()
+        print("Error update_produk:", e)
+        return {"status": False, "message": "Gagal mengupdate akses!"}
+
+def delete_user(username):
+    try:
+        user = db.session.get(User, username)
+        if not user:
+            return {"status": False, "message": "Akses tidak ditemukan!"}
+        db.session.delete(user)
+        db.session.commit()
+        return {"status": True, "message": "Berhasil menghapus akses!"}
+    except Exception as e:
+        db.session.rollback()
+        print("Error delete_user:", e)
+        return {"status": False, "message": "Gagal hapus akses"}

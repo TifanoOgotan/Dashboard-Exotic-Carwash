@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block content %}
-<h2>Transaksi</h2>
+<h3>Transaksi</h3>
 <hr />
-<div class="card">
+<div class="card card-zoom">
   <div class="card-header">
     <div class="row">
       <div class="col-7">
@@ -15,10 +15,11 @@
               class="form-control"
               name="tanggal_awal"
               id="tanggal_awal"
+              readonly
             />
           </div>
           <label class="col-1 col-form-label" style="text-align: center"
-            >S/D</label
+            >-</label
           >
           <div class="col-3">
             <input
@@ -26,6 +27,7 @@
               class="form-control"
               name="tanggal_akhir"
               id="tanggal_akhir"
+              readonly
             />
           </div>
           <div class="col">
@@ -198,8 +200,45 @@
 <script>
   $(document).ready(function () {
     const jabatan = "{{session.person.jabatan}}";
-    $("#tanggal_awal").val(moment().format("DD-MMM-YYYY"));
-    $("#tanggal_akhir").val(moment().format("DD-MMM-YYYY"));
+    // inisialisasi datepicker tanggal awal
+    $("#tanggal_awal")
+      .datepicker({
+        format: "dd-M-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+      })
+      .on("changeDate", function (e) {
+        var tanggalAwal = $("#tanggal_awal").datepicker("getDate");
+        $("#tanggal_akhir").datepicker("setStartDate", tanggalAwal);
+
+        // jika tanggal akhir lebih kecil dari tanggal awal, reset tanggal akhir
+        var tanggalAkhir = $("#tanggal_akhir").datepicker("getDate");
+        if (tanggalAkhir && tanggalAkhir < tanggalAwal) {
+          $("#tanggal_akhir").datepicker("setDate", tanggalAwal);
+        }
+      });
+
+    // inisialisasi datepicker tanggal akhir
+    $("#tanggal_akhir")
+      .datepicker({
+        format: "dd-M-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+      })
+      .on("changeDate", function (e) {
+        var tanggalAkhir = $("#tanggal_akhir").datepicker("getDate");
+        $("#tanggal_awal").datepicker("setEndDate", tanggalAkhir);
+
+        // jika tanggal awal lebih besar dari tanggal akhir, reset tanggal awal
+        var tanggalAwal = $("#tanggal_awal").datepicker("getDate");
+        if (tanggalAwal && tanggalAwal > tanggalAkhir) {
+          $("#tanggal_awal").datepicker("setDate", tanggalAkhir);
+        }
+      });
+
+    // set default hari ini untuk keduanya
+    $("#tanggal_awal").datepicker("setDate", new Date());
+    $("#tanggal_akhir").datepicker("setDate", new Date());
 
     const table_transaksi = $("#transaksi").DataTable({
       dom: "lrtip", // hilangkan search default
@@ -207,6 +246,7 @@
       scrollCollapse: true,
       paging: false,
       processing: true,
+      order: [],
       serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya
       ajax: {
         url: "/transaksi/data",

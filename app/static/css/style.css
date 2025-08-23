@@ -8,7 +8,7 @@ html, body {
 #sidebar {
     width: 15%;
     height: auto; 
-    min-height: calc(100vh - 118px);
+    min-height: calc(100vh - 117px);
     background-color: #f8f9fa;
 }
 
@@ -16,7 +16,11 @@ html, body {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    height: calc(100vh - 118px); 
+    height: calc(100vh - 117px);
+}
+
+.card-zoom {
+    zoom: 0.80;
 }
 
 hr {
@@ -25,3 +29,16 @@ hr {
     background-color: #333; /* Warna garis */
     margin: 20px 0; /* Jarak atas bawah */
 }
+
+.datepicker-dropdown {
+    transform: scale(1.1); /* Perbesar 130% */
+}
+.datepicker {
+    font-size: 1.1rem; /* Perbesar teks */
+}
+
+.datepicker table tr td,
+.datepicker table tr th {
+    padding: 10px; /* Perbesar jarak tombol */
+}
+

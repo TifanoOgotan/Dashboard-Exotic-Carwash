@@ -35,6 +35,7 @@ def get_transaksi_by_date(tanggal_awal, tanggal_akhir, status_bayar=None):
                     Transaksi.tanggal <= tanggal_akhir
                 )
             )
+            .order_by(Transaksi.tanggal,Transaksi.id_transaksi)
         )
 
         # kalau status_bayar ada isinya → tambahin filter
@@ -85,7 +86,7 @@ def insert_transaksi(nopol, status_bayar, total_harga, details_list):
             details_data.append(detail_data)
 
             # Jika jenis BARANG → kurangi stok
-            if item["jenis"].upper() == "BARANG":
+            if "BARANG" in item["jenis"]:
                 produk = Produk.query.filter_by(id_produk=item["id_produk"]).first()
                 if not produk:
                     raise ValueError(f"Produk dengan ID {item['id_produk']} tidak ditemukan!")
@@ -138,7 +139,7 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
                     detail.total = jumlah_baru * detail.harga
                     detail.worker = item.get("worker")
             else:
-                if item["jenis"].upper() == "BARANG":
+                if "BARANG" in item["jenis"]:
                     produk.stok -= jumlah_baru
                 detail = DetailTransaksi(
                     id_transaksi=id_transaksi,
@@ -173,3 +174,27 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
         db.session.rollback() 
         print("Error update_transaksi:", e)
         return {"status":False, "message":"Gagal menyimpan transaksi !!!"}
+    
+def get_detail_transaksi_by_worker(pegawai ,tanggal_awal, tanggal_akhir):
+    try:
+
+        print(pegawai, tanggal_akhir, tanggal_awal)
+
+        query = (
+            db.session.query(DetailTransaksi)
+            .filter(
+                and_(
+                    DetailTransaksi.tanggal >= tanggal_awal,
+                    DetailTransaksi.tanggal <= tanggal_akhir,
+                    DetailTransaksi.worker == pegawai
+                )
+            )
+            .order_by(DetailTransaksi.tanggal,DetailTransaksi.id_transaksi)
+        )
+
+        details = query.all()
+
+        return [d.to_dict() for d in details]
+    except Exception as e:
+        print("Error get_detail_transaksi_by_worker:", e)
+        return None

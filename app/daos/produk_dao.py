@@ -52,7 +52,7 @@ def delete_produk(id_produk):
         return {"status": True, "message": "Berhasil menghapus produk!"}
     except Exception as e:
         db.session.rollback()
-        print("Error update_produk:", e)
+        print("Error delete_produk:", e)
         return {"status": False, "message": "Gagal hapus produk"}
 
 def generate_id_product(jenis, nama_produk):
