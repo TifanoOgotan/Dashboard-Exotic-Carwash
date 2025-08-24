@@ -273,7 +273,7 @@
               data-bs-toggle="modal"
               data-bs-target="#editModal">Edit</button>
             <button class="btn btn-sm btn-danger delete-btn"
-              data-nama="${row.nama}">Hapus</button>`;
+              data-nama="${row.username}">Hapus</button>`;
           },
         },
       ],
@@ -307,7 +307,7 @@
 
     $("#cari_akses").on("keyup", () => table_akses.draw());
 
-     $("#akses").on("click", ".edit-btn", function () {
+    $("#akses").on("click", ".edit-btn", function () {
       const btn = $(this);
       $("#edit_username").val(btn.data("username"));
       $("#edit_password").val(btn.data("password"));
@@ -433,7 +433,7 @@
       url: "/akses/update-akses", // Endpoint Flask
       type: "POST",
       contentType: "application/json",
-      data: JSON.stringify({ username, password, nama, jabatan}),
+      data: JSON.stringify({ username, password, nama, jabatan }),
       success: async function (response) {
         if (response.status) {
           await Swal.fire({

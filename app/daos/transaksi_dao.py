@@ -124,12 +124,9 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
 
             produk = db.session.get(Produk, id_produk)
 
-            print('COBA', id_produk, id_produk in old_details)
-
             if id_produk in old_details:
                 # sudah ada detail sebelumnya
                 detail = old_details[id_produk]
-                print(detail)
                 jumlah_lama = detail.jumlah
                 if jumlah_baru != jumlah_lama:
                     selisih = jumlah_baru - jumlah_lama
@@ -177,9 +174,6 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
     
 def get_detail_transaksi_by_worker(pegawai ,tanggal_awal, tanggal_akhir):
     try:
-
-        print(pegawai, tanggal_akhir, tanggal_awal)
-
         query = (
             db.session.query(DetailTransaksi)
             .filter(

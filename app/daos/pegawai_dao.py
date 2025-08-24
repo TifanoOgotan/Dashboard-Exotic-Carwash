@@ -37,7 +37,6 @@ def insert_pegawai(nama,no_hp):
     
 def delete_pegawai(nama):
     try:
-        print(len(nama))
         pegawai = db.session.get(Pegawai, nama)
         if not pegawai:
             return {"status": False, "message": "Pegawai tidak ditemukan!"}

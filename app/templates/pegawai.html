@@ -125,6 +125,7 @@
       </thead>
       <tbody></tbody>
     </table>
+    <div id="hasil"></div>
   </div>
 </div>
 
@@ -357,15 +358,21 @@
           sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
         },
       },
-      // drawCallback: function (settings) {
-      //   let api = this.api(); // ✅ ambil instance DataTable
-      //   let data = api.rows().data().toArray();
+      drawCallback: function (settings) {
+        let api = this.api(); // ✅ ambil instance DataTable
+        let data = api.rows().data().toArray();
 
-      //   data.forEach((row) => {
-          
-      //   });
-        
-      // },
+        const hitung = data.reduce((acc, item) => {
+          acc[item.nama_produk] = (acc[item.nama_produk] || 0) + 1;
+          return acc;
+        }, {});
+
+        let output = "";
+        for (let produk in hitung) {
+          output += `${produk} : ${hitung[produk]} <br>`;
+        }
+        document.getElementById("hasil").innerHTML = output;
+      },
     });
 
     $("#cari").on("keyup", function () {
