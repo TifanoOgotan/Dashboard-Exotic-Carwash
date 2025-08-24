@@ -518,6 +518,17 @@
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ id_transaksi, status_bayar }),
+        beforeSend: function () {
+          // Tampilkan loading
+          Swal.fire({
+            title: "Memproses...",
+            text: "Mohon tunggu sebentar",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+        },
         success: async function (response) {
           if (response.status) {
             await Swal.fire({
@@ -544,6 +555,9 @@
             showConfirmButton: false,
             timer: 2000,
           });
+        },
+        complete: function () {
+          Swal.close();
         },
       });
     });

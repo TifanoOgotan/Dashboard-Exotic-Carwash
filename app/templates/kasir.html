@@ -962,6 +962,16 @@
         edit,
         details,
       }),
+      beforeSend: function () {
+        Swal.fire({
+          title: "Memproses...",
+          text: "Mohon tunggu sebentar",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+      },
       success: async function (response) {
         if (response.status) {
           await Swal.fire({
@@ -993,6 +1003,9 @@
           showConfirmButton: false,
           timer: 2000,
         });
+      },
+      complete: function () {
+        Swal.close();
       },
     });
   }
@@ -1031,6 +1044,17 @@
         status_bayar,
         details,
       }),
+      beforeSend: function () {
+        // Tampilkan loading
+        Swal.fire({
+          title: "Memproses...",
+          text: "Mohon tunggu sebentar",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+      },
       success: async function (response) {
         if (response.status) {
           await Swal.fire({
@@ -1061,6 +1085,9 @@
           showConfirmButton: false,
           timer: 2000,
         });
+      },
+      complete: function () {
+        Swal.close();
       },
     });
   }

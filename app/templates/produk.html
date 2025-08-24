@@ -356,6 +356,17 @@
           $.ajax({
             url: `/produk/delete/${id}`,
             type: "POST",
+            beforeSend: function () {
+              // Tampilkan loading
+              Swal.fire({
+                title: "Memproses...",
+                text: "Mohon tunggu sebentar",
+                allowOutsideClick: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+            },
             success: function (response) {
               if (response.status) {
                 Swal.fire({
@@ -381,6 +392,9 @@
                 showConfirmButton: false,
                 timer: 2000,
               });
+            },
+            complete: function () {
+              Swal.close();
             },
           });
         }
@@ -420,6 +434,17 @@
       type: "POST",
       contentType: "application/json",
       data: JSON.stringify({ id_produk, nama_produk, jenis, harga, stok }),
+      beforeSend: function () {
+        // Tampilkan loading
+        Swal.fire({
+          title: "Memproses...",
+          text: "Mohon tunggu sebentar",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+      },
       success: async function (response) {
         if (response.status) {
           await Swal.fire({
@@ -447,6 +472,9 @@
           timer: 2000,
         });
       },
+      complete: function () {
+        Swal.close();
+      },
     });
   }
 
@@ -471,6 +499,17 @@
       type: "POST",
       contentType: "application/json",
       data: JSON.stringify({ nama_produk, jenis, harga, stok }),
+      beforeSend: function () {
+        // Tampilkan loading
+        Swal.fire({
+          title: "Memproses...",
+          text: "Mohon tunggu sebentar",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+      },
       success: async function (response) {
         if (response.status) {
           await Swal.fire({
@@ -496,6 +535,9 @@
           showConfirmButton: false,
           timer: 2000,
         });
+      },
+      complete: function () {
+        Swal.close();
       },
     });
   }
