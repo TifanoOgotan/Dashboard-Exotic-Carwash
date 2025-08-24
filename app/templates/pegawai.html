@@ -337,7 +337,7 @@
               });
             },
             complete: function () {
-              Swal.close();
+              // Swal.close();
             },
           });
         }
@@ -441,7 +441,7 @@
         });
       },
       complete: function () {
-        Swal.close();
+        // Swal.close();
       },
     });
   }
@@ -481,6 +481,7 @@
         if (response.data) {
           $("#detail").DataTable().clear();
           $("#detail").DataTable().rows.add(response.data).draw();
+          Swal.close();
         } else {
           Swal.fire({
             icon: `warning`,
@@ -499,7 +500,7 @@
         });
       },
       complete: function () {
-        Swal.close();
+        // Swal.close();
       },
     });
   }
