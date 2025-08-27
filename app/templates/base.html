@@ -177,11 +177,29 @@
             "\n\n";
           strukText += "Terima kasih\n\n\n";
 
+          // Encode teks struk
           let encoded = encodeURIComponent(strukText);
-          window.location.href =
+          let intentUrl =
             "intent://print/" +
             encoded +
             "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end";
+
+          // Redirect ke RawBT
+          window.location.href = intentUrl;
+
+          // Kalau gagal (misalnya Chrome blokir), kasih alert + link manual
+          setTimeout(() => {
+            if (!document.hidden) {
+              alert(
+                "Jika tidak otomatis terbuka, klik tombol Print RawBT manual."
+              );
+              let a = document.createElement("a");
+              a.href = intentUrl;
+              a.innerText = "Print dengan RawBT";
+              a.style.display = "block";
+              document.body.appendChild(a);
+            }
+          }, 1000);
         } else {
           // Cetak ke printer biasa (PC/Laptop)
           const printWindow = window.open("", "_blank");
