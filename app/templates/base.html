@@ -155,59 +155,86 @@
       }
 
       function cetakStruk(data) {
-        const printWindow = window.open("", "_blank");
-        printWindow.document.write(`
-        <html>
-        <head>
-        <style>
-        @page { size: 50mm auto; margin: 0; }
-        body { font-family: monospace; font-size: 12px; width: 46mm; margin: 0; padding: 5px; }
-        .line { border-top: 1px dashed black; margin: 5px 0; }
-        .item-row {
-            display: flex;
-        }
-        .item-name { flex: 4; }
-        .item-qty { flex: 1; text-align: left; }
-        .item-price { flex: 2; text-align: right; }
-        </style>
-        </head>
-        <body>
-            <div style="text-align:center;">
-                <strong>Exotic Carwash</strong><br>
-                No Transaksi: ${data.id_transaksi}<br>
-                Tanggal: ${data.tanggal}
+        // Deteksi Android
+        const isAndroid = /Android/i.test(navigator.userAgent);
+
+        if (isAndroid) {
+          // Cetak ke RawBT
+          // Buat teks struk untuk RawBT
+          let strukText = "=== Exotic Carwash ===\n";
+          strukText += "No Transaksi: " + data.id_transaksi + "\n";
+          strukText += "Tanggal: " + data.tanggal + "\n";
+          strukText += "------------------------------\n";
+          data.details.forEach((item) => {
+            strukText += `${item.nama_produk}  x${item.jumlah}  Rp${parseInt(
+              item.harga
+            ).toLocaleString("id-ID")}\n`;
+          });
+          strukText += "------------------------------\n";
+          strukText +=
+            "TOTAL: Rp" +
+            parseInt(data.total_harga).toLocaleString("id-ID") +
+            "\n\n";
+          strukText += "Terima kasih\n\n\n";
+
+          let encoded = encodeURIComponent(strukText);
+          window.location.href =
+            "intent://print/" +
+            encoded +
+            "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end";
+        } else {
+          // Cetak ke printer biasa (PC/Laptop)
+          const printWindow = window.open("", "_blank");
+          printWindow.document.write(`
+            <html>
+            <head>
+            <style>
+            @page { size: 50mm auto; margin: 0; }
+            body { font-family: monospace; font-size: 12px; width: 46mm; margin: 0; padding: 5px; }
+            .line { border-top: 1px dashed black; margin: 5px 0; }
+            .item-row { display: flex; }
+            .item-name { flex: 4; }
+            .item-qty { flex: 1; text-align: left; }
+            .item-price { flex: 2; text-align: right; }
+            </style>
+            </head>
+            <body>
+                <div style="text-align:center;">
+                    <strong>Exotic Carwash</strong><br>
+                    No Transaksi: ${data.id_transaksi}<br>
+                    Tanggal: ${data.tanggal}
+                    <div class="line"></div>
+                </div>
+                ${data.details
+                  .map(
+                    (item) => `
+                    <div class="item-row">
+                        <div class="item-name">${item.nama_produk}</div>
+                        <div class="item-qty">${item.jumlah}</div>
+                        <div class="item-price">${parseInt(
+                          item.harga
+                        ).toLocaleString("id-ID")}</div>
+                    </div>
+                `
+                  )
+                  .join("")}
                 <div class="line"></div>
-            </div>
-            ${data.details
-              .map(
-                (item) => `
-                <div class="item-row">
-                    <div class="item-name">${item.nama_produk}</div>
-                    <div class="item-qty">${item.jumlah}</div>
-                    <div class="item-price">${parseInt(
-                      item.harga
+                <div style="display:flex; font-weight:bold;">
+                    <div style="flex:4;">TOTAL</div>
+                    <div style="flex:2; text-align:right;">${parseInt(
+                      data.total_harga
                     ).toLocaleString("id-ID")}</div>
                 </div>
-            `
-              )
-              .join("")}
-            <div class="line"></div>
-            <div style="display:flex; font-weight:bold;">
-                <div style="flex:4;">TOTAL</div>
-                <div style="flex:2; text-align:right;">${parseInt(
-                  data.total_harga
-                ).toLocaleString("id-ID")}</div>
-            </div>
-            <br>
-            <div style="text-align:center;">Terima kasih</div>
-
-            <script>
-                window.print();
-                window.close();
-            <\/script>
-        </body>
-        </html>
-    `);
+                <br>
+                <div style="text-align:center;">Terima kasih</div>
+                <script>
+                    window.print();
+                    window.close();
+                <\/script>
+            </body>
+            </html>
+        `);
+        }
       }
     </script>
 
