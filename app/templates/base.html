@@ -137,6 +137,22 @@
       </div>
     </footer>
 
+    <!-- Register Service Worker -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/static/service-worker.js")
+            .then(function (reg) {
+              console.log("Service Worker registered:", reg);
+            })
+            .catch(function (err) {
+              console.log("Service Worker registration failed:", err);
+            });
+        });
+      }
+    </script>
+    
     <!-- JS -->
     <script>
       document
