@@ -155,55 +155,7 @@
       }
 
       function cetakStruk(data) {
-        // Deteksi Android
-        const isAndroid = /Android/i.test(navigator.userAgent);
-
-        if (isAndroid) {
-          // Cetak ke RawBT
-          // Buat teks struk untuk RawBT
-          let strukText = "=== Exotic Carwash ===\n";
-          strukText += "No Transaksi: " + data.id_transaksi + "\n";
-          strukText += "Tanggal: " + data.tanggal + "\n";
-          strukText += "------------------------------\n";
-          data.details.forEach((item) => {
-            strukText += `${item.nama_produk}  x${item.jumlah}  Rp${parseInt(
-              item.harga
-            ).toLocaleString("id-ID")}\n`;
-          });
-          strukText += "------------------------------\n";
-          strukText +=
-            "TOTAL: Rp" +
-            parseInt(data.total_harga).toLocaleString("id-ID") +
-            "\n\n";
-          strukText += "Terima kasih\n\n\n";
-
-          // Encode teks struk
-          let encoded = encodeURIComponent(strukText);
-          let intentUrl =
-            "intent://print/" +
-            encoded +
-            "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end";
-
-          // Redirect ke RawBT
-          window.location.href = intentUrl;
-
-          // Kalau gagal (misalnya Chrome blokir), kasih alert + link manual
-          setTimeout(() => {
-            if (!document.hidden) {
-              alert(
-                "Jika tidak otomatis terbuka, klik tombol Print RawBT manual."
-              );
-              let a = document.createElement("a");
-              a.href = intentUrl;
-              a.innerText = "Print dengan RawBT";
-              a.style.display = "block";
-              document.body.appendChild(a);
-            }
-          }, 1000);
-        } else {
-          // Cetak ke printer biasa (PC/Laptop)
-          const printWindow = window.open("", "_blank");
-          printWindow.document.write(`
+        const content = `
             <html>
             <head>
             <style>
@@ -223,37 +175,53 @@
                     Tanggal: ${data.tanggal}
                     <div class="line"></div>
                 </div>
-                ${data.details
-                  .map(
+                ${data.details.map(
                     (item) => `
                     <div class="item-row">
                         <div class="item-name">${item.nama_produk}</div>
                         <div class="item-qty">${item.jumlah}</div>
-                        <div class="item-price">${parseInt(
-                          item.harga
-                        ).toLocaleString("id-ID")}</div>
-                    </div>
-                `
-                  )
-                  .join("")}
+                        <div class="item-price">${parseInt(item.harga).toLocaleString("id-ID")}</div>
+                    </div>`
+                ).join("")}
                 <div class="line"></div>
                 <div style="display:flex; font-weight:bold;">
                     <div style="flex:4;">TOTAL</div>
-                    <div style="flex:2; text-align:right;">${parseInt(
-                      data.total_harga
-                    ).toLocaleString("id-ID")}</div>
+                    <div style="flex:2; text-align:right;">${parseInt(data.total_harga).toLocaleString("id-ID")}</div>
                 </div>
                 <br>
                 <div style="text-align:center;">Terima kasih</div>
-                <script>
-                    window.print();
-                    window.close();
-                <\/script>
             </body>
             </html>
-        `);
+        `;
+    
+        // --- DETEKSI PLATFORM ---
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isAndroid = userAgent.includes("android");
+        const isIOS = /iphone|ipad|ipod/.test(userAgent);
+        
+        if (isAndroid) {
+            // --- RAWBT INTENT (untuk thermal printer) ---
+            try {
+                const rawbtData = encodeURIComponent(content);
+                window.location.href = "intent://rawbt?data=" + rawbtData;
+                return; // kalau sukses, selesai
+            } catch (e) {
+                console.warn("RawBT gagal, fallback ke print biasa");
+            }
         }
-      }
+    
+        // --- DEFAULT: PC / Laptop / iOS / fallback Android ---
+        let iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    
+        iframe.contentDocument.open();
+        iframe.contentDocument.write(content);
+        iframe.contentDocument.close();
+    
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
     </script>
 
     {% block script %} {% endblock%}
