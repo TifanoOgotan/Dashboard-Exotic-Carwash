@@ -27,3 +27,11 @@ def home():
     }
 
     return render_template('dashboard.html',data=data)
+
+@bp.route('/manifest.json')
+def manifest():
+    return send_from_directory(
+        os.path.join(os.path.dirname(__file__), 'static'),
+        'manifest.json',
+        mimetype='application/manifest+json'
+    )
