@@ -50,6 +50,19 @@
       href="{{ url_for('static', filename='plugin/datatables/datatables.min.css') }}"
     />
     <script src="{{ url_for('static', filename='plugin/datatables/datatables.min.js') }}"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Untuk Android/Chrome -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Untuk iOS/Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ExoticCarwash">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/Logo.jpg') }}">
+    <!-- Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   </head>
 
   <body>
