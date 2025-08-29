@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Exotic Carwash</title>
 
     <!-- Bootstrap -->
@@ -26,7 +29,7 @@
         background-color: white;
       }
       .container-login {
-       height: calc(100vh - 56px);
+        height: calc(100vh - 56px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -60,6 +63,38 @@
         margin-bottom: 1rem;
       }
     </style>
+
+    <!-- Theme Color (wajib agar tombol Install muncul di Android) -->
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Untuk Android/Chrome -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Untuk iOS/Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="ExoticCarwash" />
+
+    <!-- Icon -->
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="{{ url_for('static', filename='images/logo-192.png') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="512x512"
+      href="{{ url_for('static', filename='images/logo-512.png') }}"
+    />
+
+    <!-- Manifest -->
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='manifest.json') }}"
+    />
   </head>
 
   <body>
@@ -82,9 +117,7 @@
       <div
         class="logo-container d-flex align-items-center justify-content-center"
       >
-        <img
-          src="{{ url_for('static', filename='images/Logo.jpg') }}"
-        />
+        <img src="{{ url_for('static', filename='images/Logo.jpg') }}" />
       </div>
 
       <div class="login-box">
@@ -118,5 +151,66 @@
         <small>&copy; 2025 | Exotic Carwash & SPA. All rights reserved.</small>
       </div>
     </footer>
+
+    <!-- <script>
+      // Fungsi masuk fullscreen
+      async function enterFullscreen(el) {
+        const req =
+          el.requestFullscreen ||
+          el.webkitRequestFullscreen ||
+          el.msRequestFullscreen;
+
+        if (req) {
+          try {
+            await req.call(el);
+            if (screen.orientation && screen.orientation.lock) {
+              try {
+                await screen.orientation.lock("landscape");
+                console.log("Orientasi dikunci ke landscape");
+              } catch (err) {
+                console.warn("Gagal lock orientasi:", err);
+              }
+            }
+          } catch (e) {
+            console.warn("Gagal masuk fullscreen:", e.message);
+          }
+        } else {
+          alert("Fullscreen API tidak didukung di browser ini.");
+        }
+      }
+
+      // Deteksi perangkat layar sentuh
+      const isTouchDevice =
+        "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+      // Jika layar sentuh, tampilkan popup Swal
+      if (isTouchDevice) {
+        document.addEventListener("DOMContentLoaded", () => {
+          Swal.fire({
+            title: "Aktifkan Fullscreen?",
+            text: "Klik tombol di bawah untuk masuk mode fullscreen (landscape).",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Fullscreen",
+            cancelButtonText: "Nanti saja",
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              enterFullscreen(document.documentElement);
+            }
+          });
+        });
+      }
+    </script> -->
+
+    <!-- Register Service Worker -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("{{ url_for('static', filename='service-worker.js') }}")
+          .then((reg) => console.log("SW registered:", reg))
+          .catch((err) => console.log("SW registration failed:", err));
+      }
+    </script>
   </body>
 </html>

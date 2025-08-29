@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Exotic Carwash</title>
 
     <!-- CSS -->
@@ -50,24 +50,6 @@
       href="{{ url_for('static', filename='plugin/datatables/datatables.min.css') }}"
     />
     <script src="{{ url_for('static', filename='plugin/datatables/datatables.min.js') }}"></script>
-
-    <!-- Theme Color (wajib agar tombol Install muncul di Android) -->
-    <meta name="theme-color" content="#000000">
-  
-    <!-- Untuk Android/Chrome -->
-    <meta name="mobile-web-app-capable" content="yes">
-  
-    <!-- Untuk iOS/Safari -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ExoticCarwash">
-  
-    <!-- Icon -->
-    <link rel="apple-touch-icon" sizes="192x192" href="{{ url_for('static', filename='images/logo-192.png') }}">
-    <link rel="apple-touch-icon" sizes="512x512" href="{{ url_for('static', filename='images/logo-512.png') }}">
-  
-    <!-- Manifest -->
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   </head>
 
   <body>
@@ -142,15 +124,6 @@
       </div>
     </footer>
 
-    <!-- Register Service Worker -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("{{ url_for('static', filename='service-worker.js') }}")
-          .then(reg => console.log("SW registered:", reg))
-          .catch(err => console.log("SW registration failed:", err));
-      }
-    </script>
-    
     <!-- JS -->
     <script>
       document
@@ -186,8 +159,8 @@
             <html>
             <head>
             <style>
-            @page { size: 50mm auto; margin: 0; }
-            body { font-family: monospace; font-size: 12px; width: 46mm; margin: 0; padding: 5px; }
+            @page { size: 58mm auto; margin: 0; }
+            body { font-family: monospace; font-size: 12px; width: 56mm; margin: 0; padding: 5px; }
             .line { border-top: 1px dashed black; margin: 5px 0; }
             .item-row { display: flex; }
             .item-name { flex: 4; }
@@ -196,60 +169,155 @@
             </style>
             </head>
             <body>
+                <br>
                 <div style="text-align:center;">
+                    <br>
                     <strong>Exotic Carwash</strong><br>
-                    No Transaksi: ${data.id_transaksi}<br>
+                    Jl KH Ahmad Dahlan no 6 petir Cipondoh tangerang<br>
+                    <div class="line"></div>
+                    No Transaksi: ${data.id_transaksi.slice(-4)}<br>
                     Tanggal: ${data.tanggal}
                     <div class="line"></div>
                 </div>
-                ${data.details.map(
+                ${data.details
+                  .map(
                     (item) => `
                     <div class="item-row">
                         <div class="item-name">${item.nama_produk}</div>
                         <div class="item-qty">${item.jumlah}</div>
-                        <div class="item-price">${parseInt(item.harga).toLocaleString("id-ID")}</div>
+                        <div class="item-price">${parseInt(
+                          item.harga
+                        ).toLocaleString("id-ID")}</div>
                     </div>`
-                ).join("")}
+                  )
+                  .join("")}
                 <div class="line"></div>
                 <div style="display:flex; font-weight:bold;">
                     <div style="flex:4;">TOTAL</div>
-                    <div style="flex:2; text-align:right;">${parseInt(data.total_harga).toLocaleString("id-ID")}</div>
+                    <div style="flex:2; text-align:right;">${parseInt(
+                      data.total_harga
+                    ).toLocaleString("id-ID")}</div>
                 </div>
                 <br>
-                <div style="text-align:center;">Terima kasih</div>
+                <div style="text-align:center;">Terima kasih Atas Kunjungan Anda</div>
             </body>
             </html>
         `;
-    
-        // --- DETEKSI PLATFORM ---
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isAndroid = userAgent.includes("android");
-        const isIOS = /iphone|ipad|ipod/.test(userAgent);
-        
-        if (isAndroid) {
-            // --- RAWBT INTENT (untuk thermal printer) ---
-            try {
-                const rawbtData = encodeURIComponent(content);
-                window.location.href = "intent://rawbt?data=" + rawbtData;
-                return; // kalau sukses, selesai
-            } catch (e) {
-                console.warn("RawBT gagal, fallback ke print biasa");
-            }
-        }
-    
+
+        const content80 = `
+            <html>
+            <head>
+            <style>
+            @page { size: 80mm auto; margin: 0; }
+            body { font-family: monospace; font-size: 12px; width: 78mm; margin: 0; padding: 5px; }
+            .line { border-top: 1px dashed black; margin: 5px 0; }
+            .item-row { display: flex; }
+            .item-name { flex: 4; }
+            .item-qty { flex: 1; text-align: left; }
+            .item-price { flex: 2; text-align: right; }
+            </style>
+            </head>
+            <body>
+                <br>
+                <div style="text-align:center;">
+                    <br>
+                    <strong>Exotic Carwash</strong><br>
+                    Jl KH Ahmad Dahlan no 6 petir Cipondoh tangerang<br>
+                    <div class="line"></div>
+                    No Transaksi: ${data.id_transaksi.slice(-4)}<br>
+                    Tanggal: ${data.tanggal}
+                    <div class="line"></div>
+                </div>
+                ${data.details
+                  .map(
+                    (item) => `
+                    <div class="item-row">
+                        <div class="item-name">${item.nama_produk}</div>
+                        <div class="item-qty">${item.jumlah}</div>
+                        <div class="item-price">${parseInt(
+                          item.harga
+                        ).toLocaleString("id-ID")}</div>
+                    </div>`
+                  )
+                  .join("")}
+                <div class="line"></div>
+                <div style="display:flex; font-weight:bold;">
+                    <div style="flex:4;">TOTAL</div>
+                    <div style="flex:2; text-align:right;">${parseInt(
+                      data.total_harga
+                    ).toLocaleString("id-ID")}</div>
+                </div>
+                <br>
+                <div style="text-align:center;">Terima kasih Atas Kunjungan Anda</div>
+            </body>
+            </html>
+        `;
+
         // --- DEFAULT: PC / Laptop / iOS / fallback Android ---
-        let iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
+        let iframe = document.createElement("iframe");
+        iframe.style.display = "none";
         document.body.appendChild(iframe);
-    
+
         iframe.contentDocument.open();
         iframe.contentDocument.write(content);
+        // iframe.contentDocument.write(content80);
         iframe.contentDocument.close();
-    
+
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
-    }
+      }
     </script>
+
+    <!-- <script>
+      // Fungsi masuk fullscreen
+      async function enterFullscreen(el) {
+        const req =
+          el.requestFullscreen ||
+          el.webkitRequestFullscreen ||
+          el.msRequestFullscreen;
+
+        if (req) {
+          try {
+            await req.call(el);
+            if (screen.orientation && screen.orientation.lock) {
+              try {
+                await screen.orientation.lock("landscape");
+                console.log("Orientasi dikunci ke landscape");
+              } catch (err) {
+                console.warn("Gagal lock orientasi:", err);
+              }
+            }
+          } catch (e) {
+            console.warn("Gagal masuk fullscreen:", e.message);
+          }
+        } else {
+          alert("Fullscreen API tidak didukung di browser ini.");
+        }
+      }
+
+      // Deteksi perangkat layar sentuh
+      const isTouchDevice =
+        "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+      // Jika layar sentuh, tampilkan popup Swal
+      if (isTouchDevice) {
+        document.addEventListener("DOMContentLoaded", () => {
+          Swal.fire({
+            title: "Aktifkan Fullscreen?",
+            text: "Klik tombol di bawah untuk masuk mode fullscreen (landscape).",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Fullscreen",
+            cancelButtonText: "Nanti saja",
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              enterFullscreen(document.documentElement);
+            }
+          });
+        });
+      }
+    </script> -->
 
     {% block script %} {% endblock%}
   </body>
