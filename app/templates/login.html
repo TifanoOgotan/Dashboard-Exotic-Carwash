@@ -2,10 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Exotic Carwash</title>
 
     <!-- Bootstrap -->
@@ -64,37 +61,6 @@
       }
     </style>
 
-    <!-- Theme Color (wajib agar tombol Install muncul di Android) -->
-    <meta name="theme-color" content="#000000" />
-
-    <!-- Untuk Android/Chrome -->
-    <meta name="mobile-web-app-capable" content="yes" />
-
-    <!-- Untuk iOS/Safari -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-    <meta name="apple-mobile-web-app-title" content="ExoticCarwash" />
-
-    <!-- Icon -->
-    <link
-      rel="apple-touch-icon"
-      sizes="192x192"
-      href="{{ url_for('static', filename='images/logo-192.png') }}"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="512x512"
-      href="{{ url_for('static', filename='images/logo-512.png') }}"
-    />
-
-    <!-- Manifest -->
-    <link
-      rel="manifest"
-      href="{{ url_for('static', filename='manifest.json') }}"
-    />
   </head>
 
   <body>
@@ -152,7 +118,7 @@
       </div>
     </footer>
 
-    <!-- <script>
+    <script>
       // Fungsi masuk fullscreen
       async function enterFullscreen(el) {
         const req =
@@ -201,16 +167,7 @@
           });
         });
       }
-    </script> -->
-
-    <!-- Register Service Worker -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .register("{{ url_for('static', filename='service-worker.js') }}")
-          .then((reg) => console.log("SW registered:", reg))
-          .catch((err) => console.log("SW registration failed:", err));
-      }
     </script>
+
   </body>
 </html>

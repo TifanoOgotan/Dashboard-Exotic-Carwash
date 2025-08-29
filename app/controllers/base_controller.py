@@ -31,22 +31,3 @@ def home():
     }
 
     return render_template('dashboard.html', data=data)
-
-
-# Endpoint manifest.json
-@base_bp.route('/manifest.json')
-def manifest():
-    return send_from_directory(
-        os.path.join(current_app.root_path, 'static'),
-        'manifest.json',
-        mimetype='application/manifest+json'
-    )
-
-# Endpoint service-worker.js
-@base_bp.route('/service-worker.js')
-def service_worker():
-    return send_from_directory(
-        os.path.join(current_app.root_path, 'static'),
-        'service-worker.js',
-        mimetype='application/javascript'
-    )
