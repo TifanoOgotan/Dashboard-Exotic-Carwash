@@ -8,7 +8,7 @@ def akses():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER':
+    if not session.get('person').get('jabatan') in 'OWNER':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     return render_template('akses.html')
@@ -26,7 +26,7 @@ def tambah_akses():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER':
+    if not session.get('person').get('jabatan') in 'OWNER':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()
@@ -42,7 +42,7 @@ def update_akses():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER':
+    if not session.get('person').get('jabatan') in 'OWNER':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()
@@ -58,7 +58,7 @@ def delete_produk(nama):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER':
+    if not session.get('person').get('jabatan') in 'OWNER':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     hasil = user_dao.delete_user(nama)

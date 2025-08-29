@@ -9,7 +9,7 @@ def kasir():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     daftar = pelanggan_dao.get_all_pelanggan()
@@ -22,7 +22,7 @@ def simpan_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()
@@ -43,7 +43,7 @@ def edit_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN KASIR':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()

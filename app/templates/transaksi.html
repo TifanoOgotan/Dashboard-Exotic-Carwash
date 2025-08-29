@@ -286,9 +286,10 @@
             let btns = `
             <button class="btn btn-sm btn-primary btn-detail">Detail</button>
             <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>`;
-            if ("DEV OWNER ADMIN".includes(jabatan)) {
+            if ("OWNER ADMIN KASIR".includes(jabatan)) {
               if (row.status_bayar === "BB") {
-                btns += `
+                if("OWNER ADMIN".includes(jabatan)){
+                  btns += `
                   <button class="btn btn-sm btn-warning edit-btn"
                     data-id="${row.id_transaksi}"
                     data-tanggal="${row.tanggal}"
@@ -298,6 +299,7 @@
                     data-details="${row.details}"
                     data-bs-toggle="modal"
                     data-bs-target="#editModal">Edit</button>`;
+                }
               } else {
                 btns += `
                   <button class="btn btn-sm btn-success btn-cetak"

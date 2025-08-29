@@ -8,7 +8,7 @@ def produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     return render_template('produk.html')
@@ -26,7 +26,7 @@ def tambah_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()
@@ -42,7 +42,7 @@ def update_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()
@@ -59,7 +59,7 @@ def delete_produk(id_produk):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     hasil = produk_dao.delete_produk(id_produk)

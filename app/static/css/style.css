@@ -30,15 +30,15 @@ hr {
     margin: 20px 0; /* Jarak atas bawah */
 }
 
-.datepicker-dropdown {
-    transform: scale(1.1); /* Perbesar 130% */
-}
+/* .datepicker-dropdown {
+    transform: scale(1.1);
+} */
 .datepicker {
-    font-size: 1.1rem; /* Perbesar teks */
+    font-size: 1.1rem;
 }
 
 .datepicker table tr td,
 .datepicker table tr th {
-    padding: 10px; /* Perbesar jarak tombol */
+    padding: 5px;
 }
 

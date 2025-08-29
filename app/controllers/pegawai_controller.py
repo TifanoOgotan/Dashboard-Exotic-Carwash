@@ -8,7 +8,7 @@ def pegawai():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     pegawai_list = pegawai_dao.get_all_pegawai()
@@ -39,7 +39,7 @@ def tambah_pegawai():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     param = request.get_json()
@@ -53,7 +53,7 @@ def delete_produk(nama):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'DEV OWNER ADMIN':
+    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     hasil = pegawai_dao.delete_pegawai(nama)
