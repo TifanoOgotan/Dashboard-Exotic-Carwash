@@ -53,7 +53,7 @@ def get_transaksi_by_date(tanggal_awal, tanggal_akhir, status_bayar=None):
         ]
     except Exception as e:
         print("Error get_transaksi_by_date:", e)
-        return None
+        return []
 
 def insert_transaksi(nopol, status_bayar, total_harga, details_list):
     try:
