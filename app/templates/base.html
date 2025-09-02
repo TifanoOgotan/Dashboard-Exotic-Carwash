@@ -155,54 +155,54 @@
       }
 
       function cetakStruk(data) {
-        const content = `
-            <html>
-            <head>
-            <style>
-            @page { size: 58mm auto; margin: 0; }
-            body { font-family: monospace; font-size: 12px; width: 56mm; margin: 0; padding: 5px; }
-            .line { border-top: 1px dashed black; margin: 5px 0; }
-            .item-row { display: flex; }
-            .item-name { flex: 4; }
-            .item-qty { flex: 1; text-align: left; }
-            .item-price { flex: 2; text-align: right; }
-            </style>
-            </head>
-            <body>
-                <br>
-                <div style="text-align:center;">
-                    <br>
-                    <strong>Exotic Carwash</strong><br>
-                    Jl KH Ahmad Dahlan no 6 petir Cipondoh tangerang<br>
-                    <div class="line"></div>
-                    No Transaksi: ${data.id_transaksi.slice(-4)}<br>
-                    Tanggal: ${data.tanggal}
-                    <div class="line"></div>
-                </div>
-                ${data.details
-                  .map(
-                    (item) => `
-                    <div class="item-row">
-                        <div class="item-name">${item.nama_produk}</div>
-                        <div class="item-qty">${item.jumlah}</div>
-                        <div class="item-price">${parseInt(
-                          item.harga
-                        ).toLocaleString("id-ID")}</div>
-                    </div>`
-                  )
-                  .join("")}
-                <div class="line"></div>
-                <div style="display:flex; font-weight:bold;">
-                    <div style="flex:4;">TOTAL</div>
-                    <div style="flex:2; text-align:right;">${parseInt(
-                      data.total_harga
-                    ).toLocaleString("id-ID")}</div>
-                </div>
-                <br>
-                <div style="text-align:center;">Terima kasih Atas Kunjungan Anda</div>
-            </body>
-            </html>
-        `;
+        // const content = `
+        //     <html>
+        //     <head>
+        //     <style>
+        //     @page { size: 58mm auto; margin: 0; }
+        //     body { font-family: monospace; font-size: 12px; width: 56mm; margin: 0; padding: 5px; }
+        //     .line { border-top: 1px dashed black; margin: 5px 0; }
+        //     .item-row { display: flex; }
+        //     .item-name { flex: 4; }
+        //     .item-qty { flex: 1; text-align: left; }
+        //     .item-price { flex: 2; text-align: right; }
+        //     </style>
+        //     </head>
+        //     <body>
+        //         <br>
+        //         <div style="text-align:center;">
+        //             <br>
+        //             <strong>Exotic Carwash</strong><br>
+        //             Jl KH Ahmad Dahlan no 6 petir Cipondoh tangerang<br>
+        //             <div class="line"></div>
+        //             No Transaksi: ${data.id_transaksi.slice(-4)}<br>
+        //             Tanggal: ${data.tanggal}
+        //             <div class="line"></div>
+        //         </div>
+        //         ${data.details
+        //           .map(
+        //             (item) => `
+        //             <div class="item-row">
+        //                 <div class="item-name">${item.nama_produk}</div>
+        //                 <div class="item-qty">${item.jumlah}</div>
+        //                 <div class="item-price">${parseInt(
+        //                   item.harga
+        //                 ).toLocaleString("id-ID")}</div>
+        //             </div>`
+        //           )
+        //           .join("")}
+        //         <div class="line"></div>
+        //         <div style="display:flex; font-weight:bold;">
+        //             <div style="flex:4;">TOTAL</div>
+        //             <div style="flex:2; text-align:right;">${parseInt(
+        //               data.total_harga
+        //             ).toLocaleString("id-ID")}</div>
+        //         </div>
+        //         <br>
+        //         <div style="text-align:center;">Terima kasih Atas Kunjungan Anda</div>
+        //     </body>
+        //     </html>
+        // `;
 
         const content80 = `
             <html>
@@ -259,8 +259,8 @@
         document.body.appendChild(iframe);
 
         iframe.contentDocument.open();
-        iframe.contentDocument.write(content);
-        // iframe.contentDocument.write(content80);
+        // iframe.contentDocument.write(content);
+        iframe.contentDocument.write(content80);
         iframe.contentDocument.close();
 
         iframe.contentWindow.focus();
@@ -268,7 +268,7 @@
       }
     </script>
 
-    <script>
+    <!-- <script>
       // Fungsi masuk fullscreen
       async function enterFullscreen(el) {
         const req =
@@ -316,7 +316,7 @@
           });
         });
       }
-    </script>
+    </script> -->
 
     {% block script %} {% endblock%}
   </body>
