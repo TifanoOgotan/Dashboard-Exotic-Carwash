@@ -1,44 +1,80 @@
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* Matikan scroll di body */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
+/* Sidebar default */
 #sidebar {
-    width: 15%;
-    height: auto; 
-    min-height: calc(100vh - 117px);
-    background-color: #f8f9fa;
+  width: 15%;
+  min-height: calc(100vh - 117px);
+  background-color: #f8f9fa;
+  overflow-y: auto;
 }
 
+/* Main content */
 #main-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    height: calc(100vh - 117px);
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  height: calc(100vh - 117px);
 }
 
 .card-zoom {
-    zoom: 0.80;
+  zoom: 0.8;
 }
 
 hr {
-    border: none;
-    height: 4px; /* Ketebalan garis */
-    background-color: #333; /* Warna garis */
-    margin: 20px 0; /* Jarak atas bawah */
+  border: none;
+  height: 4px; /* Ketebalan garis */
+  background-color: #333; /* Warna garis */
+  margin: 20px 0; /* Jarak atas bawah */
 }
 
 /* .datepicker-dropdown {
     transform: scale(1.1);
 } */
 .datepicker {
-    font-size: 1.1rem;
+  font-size: 1.1rem;
 }
 
 .datepicker table tr td,
 .datepicker table tr th {
-    padding: 5px;
+  padding: 5px;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 767px) {
+  #sidebar {
+    width: 100%;
+    height: calc(100vh - 56px);
+    position: fixed;
+    top: 56px;
+    left: 0;
+    background-color: #f8f9fa;
+    /* display: none; */
+    z-index: 1040;
+    overflow-y: auto;
+  }
+  /* #sidebar.show {
+    display: block;
+  } */
+  #main-content {
+    padding: 15px;
+    height: auto;
+  }
+  .d-flex {
+    flex-direction: column;
+  }
+}

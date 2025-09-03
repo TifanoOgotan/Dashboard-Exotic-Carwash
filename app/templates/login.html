@@ -59,8 +59,59 @@
       .form-control {
         margin-bottom: 1rem;
       }
-    </style>
 
+      footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #222;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      /* Responsive for small screens */
+      /* Responsive for small screens - portrait */
+      @media (max-width: 576px) and (orientation: portrait) {
+        .container-login {
+          flex-direction: column;
+          gap: 2rem;
+          padding: 1rem;
+          height: auto;
+        }
+        .logo-container img {
+          max-width: 80vw;
+          height: auto;
+        }
+        .login-box {
+          width: 100%;
+          min-width: unset;
+          padding: 1.5rem 1.5rem;
+          box-shadow: none;
+        }
+      }
+
+      /* Responsive for small screens - landscape */
+      @media (max-width: 767px) and (orientation: landscape) {
+        .container-login {
+          flex-direction: row; /* Bisa row agar logo dan login berdampingan */
+          gap: 1.5rem;
+          padding: 1rem 2rem;
+          height: auto;
+          justify-content: center;
+        }
+        .logo-container img {
+          max-width: 40vw;
+          height: auto;
+        }
+        .login-box {
+          width: 50vw;
+          min-width: unset;
+          padding: 2rem;
+          box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -117,56 +168,5 @@
         <small>&copy; 2025 | Exotic Carwash & SPA. All rights reserved.</small>
       </div>
     </footer>
-
-    <!-- <script>
-      // Fungsi masuk fullscreen
-      async function enterFullscreen(el) {
-        const req =
-          el.requestFullscreen ||
-          el.webkitRequestFullscreen ||
-          el.msRequestFullscreen;
-
-        if (req) {
-          try {
-            await req.call(el);
-            if (screen.orientation && screen.orientation.lock) {
-              try {
-                await screen.orientation.lock("landscape");
-                console.log("Orientasi dikunci ke landscape");
-              } catch (err) {
-                console.warn("Gagal lock orientasi:", err);
-              }
-            }
-          } catch (e) {
-            console.warn("Gagal masuk fullscreen:", e.message);
-          }
-        } else {
-          alert("Fullscreen API tidak didukung di browser ini.");
-        }
-      }
-
-      // Deteksi perangkat layar sentuh
-      const isTouchDevice =
-        "ontouchstart" in window || navigator.maxTouchPoints > 0;
-
-      // Jika layar sentuh, tampilkan popup Swal
-      if (isTouchDevice) {
-        document.addEventListener("DOMContentLoaded", () => {
-          Swal.fire({
-            title: "Aktifkan Fullscreen?",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Fullscreen",
-            cancelButtonText: "Nanti saja",
-            allowOutsideClick: false,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              enterFullscreen(document.documentElement);
-            }
-          });
-        });
-      }
-    </script> -->
-
   </body>
 </html>
