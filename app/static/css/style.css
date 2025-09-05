@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -54,27 +55,8 @@ footer {
   padding: 10px 0;
 }
 
-/* Mobile responsive */
-@media (max-width: 767px) {
-  #sidebar {
-    width: 100%;
-    height: calc(100vh - 56px);
-    position: fixed;
-    top: 56px;
-    left: 0;
-    background-color: #f8f9fa;
-    /* display: none; */
-    z-index: 1040;
-    overflow-y: auto;
-  }
-  /* #sidebar.show {
-    display: block;
-  } */
-  #main-content {
-    padding: 15px;
-    height: auto;
-  }
-  .d-flex {
-    flex-direction: column;
+@media (max-width: 1024px) and (orientation: landscape) {
+  .card-zoom {
+    zoom: 0.70;
   }
 }

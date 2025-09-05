@@ -25,7 +25,7 @@
     <script src="{{ url_for('static', filename='plugin/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
     <!-- Bootstrap Datepicker -->
-     <link
+    <link
       rel="stylesheet"
       href="{{ url_for('static', filename='plugindatepicker/css/bootstrap-datepicker.min.css') }}"
     />
@@ -68,12 +68,6 @@
       });
     </script>
     {% endfor %} {% endif %} {% endwith %}
-
-    <!-- Loading Page -->
-    <!-- <div id="page-loading">
-        <img id="page-loading-image" src="/static/img/loaging.gif" alt="Loading..."
-            style="opacity: 1; border-radius:80px;">
-    </div> -->
 
     <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
@@ -126,6 +120,9 @@
 
     <!-- JS -->
     <script>
+      $(document).ready(function () {
+        document.getElementById("sidebar").classList.toggle("d-none");
+      });
       document
         .getElementById("sidebarToggle")
         .addEventListener("click", function () {
