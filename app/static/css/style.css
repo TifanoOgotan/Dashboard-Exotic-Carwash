@@ -55,8 +55,3 @@ footer {
   padding: 10px 0;
 }
 
-@media (max-width: 1024px) and (orientation: landscape) {
-  .card-zoom {
-    zoom: 0.70;
-  }
-}
