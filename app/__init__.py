@@ -23,6 +23,7 @@ def create_app():
     from app.controllers.transaksi_controller import transaksi_bp
     from app.controllers.pegawai_controller import pegawai_bp
     from app.controllers.akses_controller import akses_bp
+    from app.controllers.pelanggan_controller import pelanggan_bp
 
     # register blueprint
     app.register_blueprint(base_bp)
@@ -32,6 +33,7 @@ def create_app():
     app.register_blueprint(transaksi_bp)
     app.register_blueprint(pegawai_bp)
     app.register_blueprint(akses_bp)
+    app.register_blueprint(pelanggan_bp)
 
     return app
 

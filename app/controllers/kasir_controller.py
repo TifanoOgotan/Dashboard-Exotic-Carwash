@@ -9,7 +9,7 @@ def kasir():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR':
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN KASIR':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     daftar = pelanggan_dao.get_all_pelanggan()
@@ -22,9 +22,8 @@ def simpan_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN KASIR':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     nopol = param.get('nopol')
     nama_pelanggan = param.get('nama_pelanggan')
@@ -44,9 +43,8 @@ def edit_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN KASIR':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     id_transaksi = param.get('id_transaksi')
     tanggal = param.get('tanggal')

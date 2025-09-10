@@ -8,7 +8,7 @@ def akses():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER':
+    if session.get('person').get('jabatan') not in 'OWNER':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     return render_template('akses.html')
@@ -26,9 +26,8 @@ def tambah_akses():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     username = param.get('username').strip()
     password = param.get('password').strip()
@@ -42,9 +41,8 @@ def update_akses():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     username = param.get('username')
     password = param.get('password').strip()
@@ -58,8 +56,7 @@ def delete_produk(nama):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     hasil = user_dao.delete_user(nama)
     return jsonify(hasil)

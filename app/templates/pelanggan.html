@@ -1,0 +1,524 @@
+{% extends 'base.html' %} {% block content %}
+<h3>Pelanggan</h3>
+<hr />
+<div class="card card-zoom">
+  <div class="card-header">
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-6" style="justify-items: center">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="cari_pelanggan"
+            placeholder="Cari Pelanggan"
+          />
+        </div>
+      </div>
+      <div class="col-3" style="text-align: right">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#tambahModal"
+        >
+          Tambah Pelanggan
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table
+      id="pelanggan"
+      class="display table table-light table-striped-columns"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Nomor Kendaraan</th>
+          <th>Nama</th>
+          <th>Nama Kendaraan</th>
+          <th>Nomor Hp</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Tambah Produk-->
+<div
+  class="modal fade"
+  id="tambahModal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Data Pelanggan</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label
+            for="t_nopol"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nomor Kendaraan</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="t_nopol"
+              placeholder="Nomor Kendaraan"
+              oninput="this.value = this.value.toUpperCase().replace(/\s/g, '');"
+            />
+          </div>
+          <label
+            for="t_nama"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nama Pelanggan</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="t_nama"
+              placeholder="Nama Pelanggan"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <label
+            for="t_nama_kendaraan"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nama Kendaraan</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="t_nama_kendaraan"
+              placeholder="Nama Kendaraan"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+          <label
+            for="t_no_hp"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nomor Hp</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="t_no_hp"
+              placeholder="Nomor Hp"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="simpan()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah Produk-->
+<div
+  class="modal fade"
+  id="editModal"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Data Pelanggan</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label
+            for="edit_nopol"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nomor Kendaraan</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_nopol"
+              placeholder="Nomor Kendaraan"
+              oninput="this.value = this.value.toUpperCase().replace(/\s/g, '');"
+              readonly
+              disabled
+            />
+          </div>
+          <label
+            for="edit_nama"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nama Pelanggan</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_nama"
+              placeholder="Nama Pelanggan"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <label
+            for="edit_nama_kendaraan"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nama Kendaraan</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_nama_kendaraan"
+              placeholder="Nama Kendaraan"
+              oninput="this.value = this.value.toUpperCase();"
+            />
+          </div>
+          <label
+            for="t_no_hp"
+            class="col-sm-2 col-form-label"
+            style="text-align: right"
+            >Nomor Hp</label
+          >
+          <div class="col-sm-3">
+            <input
+              type="text"
+              class="form-control"
+              id="edit_no_hp"
+              placeholder="Nomor Hp"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="simpanEdit()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block script %}
+<script>
+  $(document).ready(function () {
+    const jabatan = "{{session.person.jabatan}}";
+    const table_pelanggan = $("#pelanggan").DataTable({
+      dom: "lrtip", // hilangkan search default
+      scrollY: "330px",
+      scrollCollapse: true,
+      paging: false,
+      processing: true,
+      order: [],
+      serverSide: false, // jika ingin server-side true, tinggal ubah ini dan backendnya
+      ajax: {
+        url: "/pelanggan/data",
+        type: "POST",
+      },
+      columns: [
+        { data: "nopol" },
+        { data: "nama_pelanggan" },
+        { data: "nama_kendaraan" },
+        { data: "no_hp" },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            let btns = `<button class="btn btn-sm btn-warning edit-btn"
+              data-nopol="${row.nopol}"
+              data-nama_pelanggan="${row.nama_pelanggan}"
+              data-nama_kendaraan="${row.nama_kendaraan}"
+              data-no_hp="${row.no_hp}"
+              data-bs-toggle="modal"
+              data-bs-target="#editModal">Edit</button>`;
+            if ("OWNER ADMIN".includes(jabatan)) {
+              btns += `
+              <button class="btn btn-sm btn-danger delete-btn"
+                data-nopol="${row.nopol}"
+                data-nama="${row.nama_pelanggan}">Hapus</button>`;
+            }
+            return btns;
+          },
+        },
+      ],
+      language: {
+        decimal: "",
+        emptyTable: "Tidak ada data yang tersedia pada tabel ini",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(disaring dari _MAX_ total data)",
+        lengthMenu: "Tampilkan _MENU_ data",
+        loadingRecords: "Memuat...",
+        processing: "Memproses...",
+        search: "Cari:",
+        zeroRecords: "Tidak ditemukan data yang sesuai",
+        aria: {
+          sortAscending: ": aktifkan untuk mengurutkan kolom secara menaik",
+          sortDescending: ": aktifkan untuk mengurutkan kolom secara menurun",
+        },
+      },
+    });
+
+    $.fn.dataTable.ext.search.push((settings, data) => {
+      const val = $("#cari_pelanggan").val().toLowerCase();
+      return (
+        !val ||
+        data[0].toLowerCase().includes(val) ||
+        data[1].toLowerCase().includes(val)
+      );
+    });
+
+    $("#cari_pelanggan").on("keyup", () => table_pelanggan.draw());
+
+    $("#pelanggan").on("click", ".edit-btn", function () {
+      const btn = $(this);
+      $("#edit_nopol").val(btn.data("nopol"));
+      $("#edit_nama").val(btn.data("nama_pelanggan"));
+      $("#edit_nama_kendaraan").val(btn.data("nama_kendaraan"));
+      $("#edit_no_hp").val(btn.data("no_hp"));
+    });
+
+    $("#pelanggan").on("click", ".delete-btn", function () {
+      const nopol = $(this).data("nopol");
+      const nama = $(this).data("nama");
+      Swal.fire({
+        title: "Yakin?",
+        text: `Ingin menghapus pelanggan ${nama} (${nopol}) ?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Iya, hapus !!!",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/pelanggan/delete/${nopol}`,
+            type: "POST",
+            beforeSend: function () {
+              // Tampilkan loading
+              Swal.fire({
+                title: "Memproses...",
+                text: "Mohon tunggu sebentar",
+                allowOutsideClick: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+            },
+            success: function (response) {
+              if (response.status) {
+                Swal.fire({
+                  icon: `success`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+                table_pelanggan.ajax.reload();
+              } else {
+                Swal.fire({
+                  icon: `warning`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+              }
+            },
+            error: function () {
+              Swal.fire({
+                icon: `warning`,
+                title: `Terjadi kesalahan saat menghapus pelanggan !!!`,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            },
+            complete: function () {
+              // Swal.close();
+            },
+          });
+        }
+      });
+    });
+  });
+
+  async function simpan() {
+    let nopol = $("#t_nopol").val();
+    let nama_pelanggan = $("#t_nama").val();
+    let nama_kendaraan = $("#t_nama_kendaraan").val();
+    let no_hp = $("#t_no_hp").val();
+
+    $.ajax({
+      url: "/pelanggan/tambah-pelanggan", // Endpoint Flask
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ nopol, nama_pelanggan, nama_kendaraan, no_hp }),
+      beforeSend: function () {
+        // Tampilkan loading
+        Swal.fire({
+          title: "Memproses...",
+          text: "Mohon tunggu sebentar",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+      },
+      success: async function (response) {
+        if (response.status) {
+          await Swal.fire({
+            icon: `success`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          location.reload();
+        } else {
+          Swal.fire({
+            icon: `warning`,
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: `warning`,
+          title: `Terjadi kesalahan saat menambahkan pelanggan !!!`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+      complete: function () {
+        // Swal.close();
+      },
+    });
+  }
+
+  async function simpanEdit() {
+    let nopol = $("#edit_nopol").val();
+    let nama_pelanggan = $("#edit_nama").val();
+    let nama_kendaraan = $("#edit_nama_kendaraan").val();
+    let no_hp = $("#edit_no_hp").val();
+
+    if (!nama_pelanggan) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Nama Pelanggan harus di isi !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+    if (!nama_kendaraan) {
+      Swal.fire({
+        icon: `warning`,
+        title: `Nama Kendaraan harus di isi !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Yakin?",
+      text: `Ingin menyimpan pelanggan ${nopol} ?`,
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Iya, Simpan !!!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      $.ajax({
+        url: "/pelanggan/update-pelanggan", // Endpoint Flask
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ nopol, nama_pelanggan, nama_kendaraan, no_hp }),
+        beforeSend: function () {
+          // Tampilkan loading
+          Swal.fire({
+            title: "Memproses...",
+            text: "Mohon tunggu sebentar",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+        },
+        success: async function (response) {
+          if (response.status) {
+            await Swal.fire({
+              icon: `success`,
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000,
+            });
+            await $("#pelanggan").DataTable().ajax.reload();
+            $("#editModal").modal("hide");
+          } else {
+            Swal.fire({
+              icon: `warning`,
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+        },
+        error: function (xhr) {
+          Swal.fire({
+            icon: `warning`,
+            title: `Terjadi kesalahan saat mengupdate transaksi !!!`,
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        },
+        complete: function () {
+          // Swal.close();
+        },
+      });
+    });
+  }
+</script>
+{% endblock %}

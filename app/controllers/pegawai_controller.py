@@ -8,7 +8,7 @@ def pegawai():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     pegawai_list = pegawai_dao.get_all_pegawai()
@@ -39,9 +39,8 @@ def tambah_pegawai():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     nama = param.get('nama').strip()
     no_hp = param.get('no_hp')
@@ -53,8 +52,7 @@ def delete_produk(nama):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     hasil = pegawai_dao.delete_pegawai(nama)
     return jsonify(hasil)

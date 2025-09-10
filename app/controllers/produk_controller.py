@@ -8,7 +8,7 @@ def produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     return render_template('produk.html')
@@ -26,9 +26,8 @@ def tambah_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     nama_produk = param.get('nama_produk')
     jenis = param.get('jenis')
@@ -42,9 +41,8 @@ def update_produk():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
     id_produk = param.get('id_produk')
     nama_produk = param.get('nama_produk')
@@ -59,8 +57,7 @@ def delete_produk(id_produk):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     hasil = produk_dao.delete_produk(id_produk)
     return jsonify(hasil)

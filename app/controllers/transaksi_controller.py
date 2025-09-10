@@ -8,7 +8,7 @@ def transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR VIEW':
+    if session.get('person').get('jabatan') not in 'OWNER ADMIN KASIR VIEW':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
     return render_template('transaksi.html')
@@ -18,9 +18,6 @@ def data_transaksi():
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER ADMIN KASIR VIEW':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
     tanggal_awal = request.form.get("tanggal_awal")
     tanggal_akhir = request.form.get("tanggal_akhir")
     data = transaksi_dao.get_transaksi_by_date(tanggal_awal, tanggal_akhir)
@@ -31,8 +28,7 @@ def delete_produk(id, tanggal):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))
-    if not session.get('person').get('jabatan') in 'OWNER':
-        flash("Anda Tidak Berhak !!!", "info")
-        return redirect(url_for('base.home'))
+    if session.get('person').get('jabatan') not in 'OWNER':
+        return {"status": False, "message": "Anda Tidak Berhak !!!"}
     hasil = transaksi_dao.delete_transaksi(id,tanggal)
     return jsonify(hasil)
