@@ -288,7 +288,7 @@
             <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>`;
             if ("OWNER ADMIN KASIR".includes(jabatan)) {
               if (row.status_bayar === "BB") {
-                if("OWNER ADMIN".includes(jabatan)){
+                if ("OWNER ADMIN".includes(jabatan)) {
                   btns += `
                   <button class="btn btn-sm btn-warning edit-btn"
                     data-id="${row.id_transaksi}"
@@ -305,6 +305,12 @@
                   <button class="btn btn-sm btn-success btn-cetak"
                     data-id="${row.id_transaksi}">Cetak Ulang</button>`;
               }
+            }
+            if ("OWNER" == jabatan) {
+              btns += `
+              <button class="btn btn-sm btn-danger btn-delete"
+                data-id="${row.id_transaksi}"
+                data-tanggal="${row.tanggal}">Hapus</button>`;
             }
             return btns;
           },
@@ -394,6 +400,68 @@
         row.child(format(row.data())).show();
         tr.addClass("shown");
       }
+    });
+
+    $("#transaksi").on("click", ".btn-delete", function () {
+      const id = $(this).data("id");
+      const tanggal = $(this).data("tanggal");
+        Swal.fire({
+          title: "Yakin?",
+          html: `Ingin menghapus transaksi <b>${id}</b><br>tanggal <b>${tanggal}</b> ?`,
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Iya, hapus !!!",
+          cancelButtonText: "Batal",
+        }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/transaksi/delete/${id}/${tanggal}`,
+            type: "POST",
+            beforeSend: function () {
+              // Tampilkan loading
+              Swal.fire({
+                title: "Memproses...",
+                text: "Mohon tunggu sebentar",
+                allowOutsideClick: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              });
+            },
+            success: function (response) {
+              if (response.status) {
+                Swal.fire({
+                  icon: `success`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+                table_transaksi.ajax.reload();
+              } else {
+                Swal.fire({
+                  icon: `warning`,
+                  title: response.message,
+                  showConfirmButton: false,
+                  timer: 2000,
+                });
+              }
+            },
+            error: function () {
+              Swal.fire({
+                icon: `warning`,
+                title: `Terjadi kesalahan saat menghapus pegawai !!!`,
+                showConfirmButton: false,
+                timer: 2000,
+              });
+            },
+            complete: function () {
+              // Swal.close();
+            },
+          });
+        }
+      });
     });
 
     // fungsi format detail

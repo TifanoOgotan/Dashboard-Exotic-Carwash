@@ -25,3 +25,14 @@ def data_transaksi():
     tanggal_akhir = request.form.get("tanggal_akhir")
     data = transaksi_dao.get_transaksi_by_date(tanggal_awal, tanggal_akhir)
     return jsonify({"data": data})
+
+@transaksi_bp.route('/delete/<id>/<tanggal>', methods=['POST'])
+def delete_produk(id, tanggal):
+    if not session.get('person'):
+        flash("Anda Harus Login !!!", "unauthorized")
+        return redirect(url_for('auth.login'))
+    if not session.get('person').get('jabatan') in 'OWNER':
+        flash("Anda Tidak Berhak !!!", "info")
+        return redirect(url_for('base.home'))
+    hasil = transaksi_dao.delete_transaksi(id,tanggal)
+    return jsonify(hasil)

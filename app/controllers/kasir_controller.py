@@ -36,6 +36,7 @@ def simpan_transaksi():
     details = param.get('details')
     pelanggan_dao.check_pelanggan(nopol, nama_pelanggan, nama_kendaraan, no_hp, edit)
     hasil = transaksi_dao.insert_transaksi(nopol, status_bayar, total_harga, details)
+    hasil['data']['pelanggan'] = {"nopol":nopol,"nama_pelanggan":nama_pelanggan,"nama_kendaraan":nama_kendaraan,"no_hp":no_hp}
     return jsonify(hasil)
 
 @kasir_bp.route('/edit-transaksi', methods=['POST'])
@@ -53,5 +54,9 @@ def edit_transaksi():
     total_harga = param.get('total_harga')
     status_bayar = param.get('status_bayar')
     details = param.get('details')
+    nama_pelanggan = param.get('nama_pelanggan')
+    nama_kendaraan = param.get('nama_kendaraan')
+    no_hp = param.get('no_hp')
     hasil = transaksi_dao.update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, details)
+    hasil['data']['pelanggan'] = {"nopol":nopol,"nama_pelanggan":nama_pelanggan,"nama_kendaraan":nama_kendaraan,"no_hp":no_hp}
     return jsonify(hasil)

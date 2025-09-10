@@ -135,7 +135,7 @@
           type="button"
           class="btn btn-success"
           style="width: 100%"
-          onclick="simpanTransaksi()"
+          id="btnSimpanCetak"
         >
           Simpan Transaksi
         </button>
@@ -192,6 +192,10 @@
         <div class="modal-body">
           <input type="hidden" id="len_details" />
           <input type="hidden" id="edit_details" value="F" />
+          <input type="hidden" id="edit_nama_pelanggan" />
+          <input type="hidden" id="edit_nama_kendaraan" />
+          <input type="hidden" id="edit_no_hp" />
+          <input type="hidden" id="len_details" />
           <div class="row mb-3">
             <label
               for="edit_id_transaksi"
@@ -306,7 +310,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-success" onclick="simpanEdit()">
+          <button type="button" class="btn btn-success" id="btnSimpanEditCetak">
             Simpan
           </button>
         </div>
@@ -629,6 +633,7 @@
           searchable: false,
           render: function (data, type, row) {
             let detailsStr = JSON.stringify(row.details);
+            console.log(row)
             return `<button class="btn btn-sm btn-primary btn-detail">Detail</button>
                     <button class="btn btn-sm btn-secondary btn-pelanggan">Pelanggan</button>
                     <button class="btn btn-sm btn-warning edit-btn"
@@ -637,6 +642,9 @@
                       data-nopol="${row.nopol}"
                       data-status="${row.status_bayar}"
                       data-harga="${row.total_harga}"
+                      data-nama_pelanggan="${row.pelanggan.nama_pelanggan}"
+                      data-nama_kendaraan="${row.pelanggan.nama_kendaraan}"
+                      data-no_hp="${row.pelanggan.no_hp}"
                       data-details='${detailsStr.replace(/'/g, "&apos;")}'
                       data-bs-toggle="modal"
                       data-bs-target="#editModal">Edit</button>`;
@@ -759,6 +767,9 @@
       $("#edit_total_harga").val(
         parseInt(btn.data("harga")).toLocaleString("id-ID")
       );
+      $("#edit_nama_pelanggan").val(btn.data("nama_pelanggan"));
+      $("#edit_nama_kendaraan").val(btn.data("nama_kendaraan"));
+      $("#edit_no_hp").val(btn.data("no_hp"));
       let details = btn.data("details");
       if (typeof details === "string") {
         details = JSON.parse(details);
@@ -922,6 +933,30 @@
       });
     });
 
+  $("#btnSimpanCetak").on("click", async function() {
+    const data = await simpanTransaksi();
+    if (data && data.status) {
+      await Swal.fire({
+        icon: `success`,
+        title: data.message,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      if (data.data.status_bayar != 'BB'){
+        await cetakStruk(data.data); // dipanggil langsung dari click → Android Chrome izinkan
+        await Swal.fire({
+          icon: `info`,
+          title: 'Sudah Selesai Mencetak',
+        });
+        location.reload()
+      }
+      else {
+        location.reload();
+      }
+    }
+  });
+
   async function simpanTransaksi() {
     let nopol = $("#nopol").val();
     let nama_pelanggan = $("#nama_pelanggan").val();
@@ -948,8 +983,9 @@
       return;
     }
 
-    $.ajax({
-      url: "/kasir/simpan-transaksi", // Endpoint Flask
+    try {
+    const response = await $.ajax({
+      url: "/kasir/simpan-transaksi",
       type: "POST",
       contentType: "application/json",
       data: JSON.stringify({
@@ -971,43 +1007,45 @@
             Swal.showLoading();
           }
         });
-      },
-      success: async function (response) {
-        if (response.status) {
-          await Swal.fire({
-            icon: `success`,
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          if (status_bayar != "BB") {
-            cetakStruk(response.data);
-            location.reload();
-          } else {
-            location.reload();
-          }
-        } else {
-          Swal.fire({
-            icon: `warning`,
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000,
-          });
-        }
-      },
-      error: function (xhr) {
-        Swal.fire({
-          icon: `warning`,
-          title: `Terjadi kesalahan saat menyimpan transaksi !!!`,
-          showConfirmButton: false,
-          timer: 2000,
-        });
-      },
-      complete: function () {
-        // Swal.close();
-      },
+      }
     });
+
+    return response; // 🔑 sekarang kita balikin hasil AJAX
+    } catch (xhr) {
+      console.error("Error simpanTransaksi:", xhr);
+      await Swal.fire({
+        icon: `warning`,
+        title: `Terjadi kesalahan saat menyimpan transaksi !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return null;
+    } finally {
+      Swal.close();
+    }
   }
+
+  $("#btnSimpanEditCetak").on("click", async function() {
+    const data = await simpanEdit();
+    if (data && data.status) {
+      await Swal.fire({
+        icon: `success`,
+        title: data.message,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      if (data.data.status_bayar != 'BB'){
+        await cetakStruk(data.data); // dipanggil langsung dari click → Android Chrome izinkan
+        await Swal.fire({
+          icon: `info`,
+          title: 'Sudah Selesai Mencetak',
+        });
+        location.reload()
+      }else {
+        location.reload();
+      }
+    }
+  });
 
   async function simpanEdit() {
     let id_transaksi = $("#edit_id_transaksi").val();
@@ -1017,6 +1055,9 @@
     let status_bayar = $("#edit_status_bayar").val();
     let details = $("#edit_produk").DataTable().rows().data().toArray();
     let len_details = $("#len_details").val();
+    let nama_pelanggan = $("#edit_nama_pelanggan").val();
+    let nama_kendaraan = $("#edit_nama_kendaraan").val();
+    let no_hp = $("#edit_no_hp").val();
     if (
       status_bayar == "BB" &&
       details.length == len_details &&
@@ -1030,8 +1071,8 @@
       });
       return;
     }
-
-    $.ajax({
+    try{
+    const response = await $.ajax({
       url: "/kasir/edit-transaksi", // Endpoint Flask
       type: "POST",
       contentType: "application/json",
@@ -1042,9 +1083,11 @@
         total_harga,
         status_bayar,
         details,
+        nama_pelanggan,
+        nama_kendaraan,
+        no_hp
       }),
       beforeSend: function () {
-        // Tampilkan loading
         Swal.fire({
           title: "Memproses...",
           text: "Mohon tunggu sebentar",
@@ -1053,42 +1096,21 @@
             Swal.showLoading();
           }
         });
-      },
-      success: async function (response) {
-        if (response.status) {
-          await Swal.fire({
-            icon: `success`,
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          if (status_bayar != "BB") {
-            cetakStruk(response.data);
-            location.reload();
-          } else {
-            location.reload();
-          }
-        } else {
-          Swal.fire({
-            icon: `warning`,
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000,
-          });
-        }
-      },
-      error: function (xhr) {
-        Swal.fire({
-          icon: `warning`,
-          title: `Terjadi kesalahan saat menyimpan transaksi !!!`,
-          showConfirmButton: false,
-          timer: 2000,
-        });
-      },
-      complete: function () {
-        // Swal.close();
-      },
+      }
     });
+    return response; // 🔑 sekarang kita balikin hasil AJAX
+    } catch (xhr) {
+      console.error("Error simpanTransaksi:", xhr);
+      await Swal.fire({
+        icon: `warning`,
+        title: `Terjadi kesalahan saat menyimpan transaksi !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return null;
+    } finally {
+      Swal.close();
+    }
   }
 
   function reset() {

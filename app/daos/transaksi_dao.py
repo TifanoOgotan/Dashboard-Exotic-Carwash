@@ -192,3 +192,24 @@ def get_detail_transaksi_by_worker(pegawai ,tanggal_awal, tanggal_akhir):
     except Exception as e:
         print("Error get_detail_transaksi_by_worker:", e)
         return None
+    
+def delete_transaksi(id_transaksi,tanggal):
+    try:
+        transaksi = db.session.query(Transaksi).filter_by(id_transaksi=id_transaksi, tanggal=tanggal).first()
+        if not transaksi:
+            return {"status": False, "message": "Transaksi tidak ditemukan!"}
+        for item in transaksi.details:
+            if "BARANG" in item.jenis:
+                produk = db.session.query(Produk).filter_by(id_produk=item.id_produk).first()
+                if produk:
+                    produk.stok += item.jumlah  # kembalikan stok sesuai jumlah yg terjual
+                    db.session.add(produk)
+
+        # hapus transaksi (detail ikut terhapus karena cascade)
+        db.session.delete(transaksi)
+        db.session.commit()
+        return {"status": True, "message": "Berhasil menghapus transaksi!"}
+    except Exception as e:
+        db.session.rollback()
+        print("Error transaksi_produk:", e)
+        return {"status": False, "message": "Gagal hapus transaksi"}
