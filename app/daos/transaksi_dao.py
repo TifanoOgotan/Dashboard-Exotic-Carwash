@@ -127,14 +127,15 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
             if id_produk in old_details:
                 # sudah ada detail sebelumnya
                 detail = old_details[id_produk]
-                jumlah_lama = detail.jumlah
-                if jumlah_baru != jumlah_lama:
-                    selisih = jumlah_baru - jumlah_lama
-                    produk.stok -= selisih  
+                if "BARANG" in item["jenis"]:
+                    jumlah_lama = detail.jumlah
+                    if jumlah_baru != jumlah_lama:
+                        selisih = jumlah_baru - jumlah_lama
+                        produk.stok -= selisih  
 
-                    detail.jumlah = jumlah_baru
-                    detail.total = jumlah_baru * detail.harga
-                    detail.worker = item.get("worker")
+                        detail.jumlah = jumlah_baru
+                        detail.total = jumlah_baru * detail.harga
+                        detail.worker = item.get("worker")
             else:
                 if "BARANG" in item["jenis"]:
                     produk.stok -= jumlah_baru
@@ -158,6 +159,15 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
                 'total':item['total']
             }
             details_data.append(detail_data)
+
+        # --- Hapus detail lama yang tidak ada di details_list ---
+        details_id_set = {item["id_produk"] for item in details_list}
+        for id_produk, detail in old_details.items():
+            if id_produk not in details_id_set:
+                produk = db.session.get(Produk, id_produk)
+                if "BARANG" in detail.jenis:
+                    produk.stok += detail.jumlah  # kembalikan stok
+                db.session.delete(detail)
 
         data['id_transaksi'] = id_transaksi
         data['tanggal'] = date.today().strftime('%d-%b-%Y')

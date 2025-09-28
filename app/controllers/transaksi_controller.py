@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from app.daos import transaksi_dao
+from app.daos import transaksi_dao, pegawai_dao
 
 transaksi_bp = Blueprint('transaksi', __name__, url_prefix='/transaksi')
 
@@ -11,7 +11,8 @@ def transaksi():
     if session.get('person').get('jabatan') not in 'OWNER ADMIN KASIR VIEW':
         flash("Anda Tidak Berhak !!!", "info")
         return redirect(url_for('base.home'))
-    return render_template('transaksi.html')
+    pegawai_list = pegawai_dao.get_all_pegawai()
+    return render_template('transaksi.html', pegawai_list = pegawai_list)
 
 @transaksi_bp.route('/data', methods=['POST'])
 def data_transaksi():
@@ -24,7 +25,7 @@ def data_transaksi():
     return jsonify({"data": data})
 
 @transaksi_bp.route('/delete/<id>/<tanggal>', methods=['POST'])
-def delete_produk(id, tanggal):
+def delete_transaksi(id, tanggal):
     if not session.get('person'):
         flash("Anda Harus Login !!!", "unauthorized")
         return redirect(url_for('auth.login'))

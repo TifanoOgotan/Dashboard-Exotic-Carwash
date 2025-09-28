@@ -836,12 +836,8 @@
         {
           data: null,
           render: function (data, type, row, meta) {
-            if ((row?.edit || "F") == "T") {
-              return `<button class="btn btn-sm btn-danger edit-delete-btn"
-              data-nama="${row.nama_produk}">Hapus</button>`;
-            } else {
-              return null;
-            }
+            return `<button class="btn btn-sm btn-danger edit-delete-btn"
+            data-nama="${row.nama_produk}">Hapus</button>`;
           },
         },
       ],
@@ -1066,6 +1062,15 @@
       Swal.fire({
         icon: `warning`,
         title: `Data Transaksi tidak berubah !!!`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
+    if (!details.length){
+      Swal.fire({
+        icon: `warning`,
+        title: `Produk Transaksi Tidak Boleh Kosong !!!`,
         showConfirmButton: false,
         timer: 2000,
       });
