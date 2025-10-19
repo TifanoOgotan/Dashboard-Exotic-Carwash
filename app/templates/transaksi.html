@@ -79,6 +79,7 @@
       <p id="total_transfer" style="text-align: center"></p>
     </div>
     <div class="col"><p id="total_belum" style="text-align: center"></p></div>
+    <div class="col"><p id="total_qris" style="text-align: center"></p></div>
   </div>
 </div>
 
@@ -434,7 +435,9 @@
               return "CASH";
             } else if (data == "TF") {
               return "TRANSFER";
-            } else {
+            } else if (data == "QR") {
+              return "QRIS";
+            }else {
               return "BELUM BAYAR";
             }
           },
@@ -506,9 +509,11 @@
 
         let totalCash = 0,
           totalTransfer = 0,
+          totalQris = 0,
           totalBelum = 0;
         let jmlCash = 0,
           jmlTransfer = 0,
+          jmlQris = 0,
           jmlBelum = 0;
 
         data.forEach((row) => {
@@ -518,7 +523,11 @@
           } else if (row.status_bayar === "TF") {
             totalTransfer += row.total_harga;
             jmlTransfer++;
-          } else {
+          } else if (row.status_bayar === "QR") {
+            totalQris += row.total_harga;
+            jmlQris++;
+          }
+           else {
             totalBelum += row.total_harga;
             jmlBelum++;
           }
@@ -536,6 +545,11 @@
         );
         $("#total_belum").text(
           `BELUM BAYAR : ${jmlBelum} transaksi - Rp ${totalBelum.toLocaleString(
+            "id-ID"
+          )}`
+        );
+        $("#total_qris").text(
+          `QRIS : ${jmlQris} transaksi - Rp ${totalQris.toLocaleString(
             "id-ID"
           )}`
         );

@@ -25,6 +25,8 @@ def simpan_transaksi():
     if session.get('person').get('jabatan') not in 'OWNER ADMIN KASIR':
         return {"status": False, "message": "Anda Tidak Berhak !!!"}
     param = request.get_json()
+    # print(param)
+    tanggal = param.get('tanggal')
     nopol = param.get('nopol')
     nama_pelanggan = param.get('nama_pelanggan')
     nama_kendaraan = param.get('nama_kendaraan')
@@ -34,7 +36,7 @@ def simpan_transaksi():
     edit = param.get('edit')
     details = param.get('details')
     pelanggan_dao.check_pelanggan(nopol, nama_pelanggan, nama_kendaraan, no_hp, edit)
-    hasil = transaksi_dao.insert_transaksi(nopol, status_bayar, total_harga, details)
+    hasil = transaksi_dao.insert_transaksi(tanggal, nopol, status_bayar, total_harga, details)
     hasil['data']['pelanggan'] = {"nopol":nopol,"nama_pelanggan":nama_pelanggan,"nama_kendaraan":nama_kendaraan,"no_hp":no_hp}
     return jsonify(hasil)
 

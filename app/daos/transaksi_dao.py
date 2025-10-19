@@ -6,11 +6,11 @@ from datetime import date
 from sqlalchemy import func, and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-def get_new_id_transaksi_today():
+def get_new_id_transaksi(tanggal):
     try:
         last_transaksi = (
             db.session.query(Transaksi)
-            .filter(func.date(Transaksi.tanggal) == date.today())
+            .filter(func.date(Transaksi.tanggal) == tanggal)
             .order_by(Transaksi.id_transaksi.desc())
             .first()
         )
@@ -55,10 +55,10 @@ def get_transaksi_by_date(tanggal_awal, tanggal_akhir, status_bayar=None):
         print("Error get_transaksi_by_date:", e)
         return []
 
-def insert_transaksi(nopol, status_bayar, total_harga, details_list):
+def insert_transaksi(tanggal, nopol, status_bayar, total_harga, details_list):
     try:
-        id_transaksi = get_new_id_transaksi_today()
-        transaksi = Transaksi(id_transaksi, date.today(), nopol, status_bayar, total_harga)
+        id_transaksi = get_new_id_transaksi(tanggal)
+        transaksi = Transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga)
         details = []
         details_data = []
         data = {}
@@ -66,7 +66,7 @@ def insert_transaksi(nopol, status_bayar, total_harga, details_list):
             # Buat detail transaksi
             detail = DetailTransaksi(
                 id_transaksi=id_transaksi,
-                tanggal=date.today(),
+                tanggal=tanggal,
                 id_produk=item["id_produk"],
                 nama_produk=item["nama_produk"],
                 jenis=item["jenis"],
@@ -95,7 +95,7 @@ def insert_transaksi(nopol, status_bayar, total_harga, details_list):
                 produk.stok -= item["jumlah"]
 
         data['id_transaksi'] = id_transaksi
-        data['tanggal'] = date.today().strftime('%d-%b-%Y')
+        data['tanggal'] = tanggal
         data['nopol'] = nopol
         data['status_bayar'] = status_bayar
         data['total_harga'] = total_harga
@@ -141,7 +141,7 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
                     produk.stok -= jumlah_baru
                 detail = DetailTransaksi(
                     id_transaksi=id_transaksi,
-                    tanggal=date.today(),
+                    tanggal=tanggal,
                     id_produk=item["id_produk"],
                     nama_produk=item["nama_produk"],
                     jenis=item["jenis"],
@@ -170,7 +170,7 @@ def update_transaksi(id_transaksi, tanggal, nopol, status_bayar, total_harga, de
                 db.session.delete(detail)
 
         data['id_transaksi'] = id_transaksi
-        data['tanggal'] = date.today().strftime('%d-%b-%Y')
+        data['tanggal'] = tanggal
         data['nopol'] = nopol
         data['status_bayar'] = status_bayar
         data['total_harga'] = total_harga

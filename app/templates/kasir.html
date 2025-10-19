@@ -6,6 +6,20 @@
     <input type="hidden" id="edit" value="F" />
     <input type="hidden" id="t_produk" value="" />
     <div class="row mb-3">
+      <label for="tanggal" class="col-2 col-form-label" style="text-align: right"
+        >Tanggal</label
+      >
+      <div class="col-2">
+            <input
+              type="text"
+              class="form-control"
+              name="tanggal"
+              id="tanggal"
+              readonly
+            />
+          </div>
+    </div>
+    <div class="row mb-3">
       <label for="nopol" class="col col-form-label" style="text-align: right"
         >Nomor Kendaraan</label
       >
@@ -91,6 +105,7 @@
           <option value="BB">Belum Bayar</option>
           <option value="CS">Cash</option>
           <option value="TF">Transfer</option>
+          <option value="QR">QRIS</option>
         </select>
       </div>
     </div>
@@ -275,6 +290,7 @@
                 <option value="BB">Belum Bayar</option>
                 <option value="CS">Cash</option>
                 <option value="TF">Transfer</option>
+                <option value="QR">QRIS</option>
               </select>
             </div>
             <div class="col-sm-1"></div>
@@ -363,6 +379,14 @@
 <script>
   $(document).ready(function () {
     let pegawai_list = {{ pegawai_list|tojson|safe }};
+
+    $("#tanggal")
+      .datepicker({
+        format: "dd-M-yyyy",
+        autoclose: true,
+        todayHighlight: true,
+      });
+    $("#tanggal").datepicker("setDate", new Date());
 
     const lov_produk = $("#lov_produk").DataTable({
       scrollY: "400px",
@@ -954,6 +978,7 @@
   });
 
   async function simpanTransaksi() {
+    let tanggal = $("#tanggal").val();
     let nopol = $("#nopol").val();
     let nama_pelanggan = $("#nama_pelanggan").val();
     let nama_kendaraan = $("#nama_kendaraan").val();
@@ -964,6 +989,7 @@
     let details = $("#produk").DataTable().rows().data().toArray();
 
     if (
+      !tanggal ||
       !nopol ||
       !nama_pelanggan ||
       !nama_kendaraan ||
@@ -985,6 +1011,7 @@
       type: "POST",
       contentType: "application/json",
       data: JSON.stringify({
+        tanggal,
         nopol,
         nama_pelanggan,
         nama_kendaraan,
